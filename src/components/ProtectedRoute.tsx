@@ -11,14 +11,14 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (!loading && !user && pathname !== '/login' && pathname !== '/signup') {
-            router.push('/login');
+            router.replace('/login');
         }
     }, [user, loading, router, pathname]);
 
     // Use effect for redirection if user is already logged in
     useEffect(() => {
         if (user && (pathname === '/login' || pathname === '/signup')) {
-            router.push('/');
+            router.replace('/');
         }
     }, [user, pathname, router]);
 
