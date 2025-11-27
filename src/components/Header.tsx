@@ -12,7 +12,7 @@ export function Header() {
                 <h1 className="text-lg font-semibold text-foreground">
                     Welcome back, <span className="text-muted-foreground">{user?.name || 'User'}</span>
                 </h1>
-                <p className="text-xs text-muted-foreground mt-0.5">Let's make today productive.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Let&apos;s make today productive.</p>
             </div>
             <div className="flex items-center space-x-4">
                 <div className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center text-foreground font-medium text-sm border border-border cursor-pointer hover:bg-secondary/80 transition-colors">

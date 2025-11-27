@@ -116,7 +116,7 @@ export default function Dashboard() {
         <div className="space-y-10 max-w-5xl mx-auto p-6">
             <section>
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold tracking-tight text-foreground">Today's Plan</h2>
+                    <h2 className="text-xl font-semibold tracking-tight text-foreground">Today&apos;s Plan</h2>
                     <span className="text-sm text-muted-foreground bg-secondary px-2.5 py-0.5 rounded-full font-medium">
                         {tasks.length}
                     </span>
