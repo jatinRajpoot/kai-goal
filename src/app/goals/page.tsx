@@ -561,7 +561,7 @@ export default function GoalsPage() {
                                         </ul>
                                     ) : (
                                         <p className="text-sm text-muted-foreground bg-secondary/50 rounded-lg p-3">
-                                            Add quick tasks that don't belong to a specific phase.
+                                            Add quick tasks that don&apos;t belong to a specific phase.
                                         </p>
                                     )}
                                 </div>

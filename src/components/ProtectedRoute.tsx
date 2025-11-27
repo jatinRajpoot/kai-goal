@@ -15,6 +15,13 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         }
     }, [user, loading, router, pathname]);
 
+    // Use effect for redirection if user is already logged in
+    useEffect(() => {
+        if (user && (pathname === '/login' || pathname === '/signup')) {
+            router.push('/');
+        }
+    }, [user, pathname, router]);
+
     if (loading) {
         return <div className="flex h-screen items-center justify-center">Loading...</div>;
     }
@@ -27,13 +34,6 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     if (!user && (pathname === '/login' || pathname === '/signup')) {
         return <>{children}</>;
     }
-
-    // Use effect for redirection if user is already logged in
-    useEffect(() => {
-        if (user && (pathname === '/login' || pathname === '/signup')) {
-            router.push('/');
-        }
-    }, [user, pathname, router]);
 
     // If user is logged in and trying to access auth pages, return null while redirecting
     if (user && (pathname === '/login' || pathname === '/signup')) {
