@@ -28,8 +28,15 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         return <>{children}</>;
     }
 
+    // Use effect for redirection if user is already logged in
+    useEffect(() => {
+        if (user && (pathname === '/login' || pathname === '/signup')) {
+            router.push('/');
+        }
+    }, [user, pathname, router]);
+
+    // If user is logged in and trying to access auth pages, return null while redirecting
     if (user && (pathname === '/login' || pathname === '/signup')) {
-        router.push('/');
         return null;
     }
 

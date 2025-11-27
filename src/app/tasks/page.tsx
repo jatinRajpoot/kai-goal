@@ -14,15 +14,19 @@ export default function TasksPage() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('active');
 
-    const dbId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!;
+    const dbId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
 
     useEffect(() => {
-        if (user) {
+        if (user && dbId) {
             fetchTasks();
+        } else if (!dbId) {
+            console.error('Missing Database ID');
+            setLoading(false);
         }
-    }, [user, filter]);
+    }, [user, filter, dbId]);
 
     const fetchTasks = async () => {
+        if (!dbId) return;
         try {
             const queries = [
                 Query.equal('userId', user!.$id),
@@ -45,6 +49,7 @@ export default function TasksPage() {
     };
 
     const toggleTask = async (taskId: string, currentStatus: boolean) => {
+        if (!dbId) return;
         try {
             await databases.updateDocument(dbId, 'tasks', taskId, {
                 isCompleted: !currentStatus

@@ -56,15 +56,19 @@ export default function GoalsPage() {
         onConfirm: () => { },
     });
 
-    const dbId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!;
+    const dbId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
 
     useEffect(() => {
-        if (user) {
+        if (user && dbId) {
             fetchGoals();
+        } else if (!dbId) {
+            console.error('Missing Database ID');
+            setLoading(false);
         }
-    }, [user]);
+    }, [user, dbId]);
 
     const fetchGoals = async () => {
+        if (!dbId) return;
         try {
             const response = await databases.listDocuments(dbId, 'goals', [
                 Query.equal('userId', user!.$id),
@@ -79,6 +83,7 @@ export default function GoalsPage() {
     };
 
     const fetchGoalDetails = async (goalId: string) => {
+        if (!dbId) return;
         try {
             // Fetch Phases
             const phasesRes = await databases.listDocuments(dbId, 'phases', [
@@ -112,7 +117,7 @@ export default function GoalsPage() {
 
     const addGoal = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newGoalTitle.trim()) return;
+        if (!newGoalTitle.trim() || !dbId) return;
 
         try {
             const response = await databases.createDocument(dbId, 'goals', ID.unique(), {
@@ -140,6 +145,7 @@ export default function GoalsPage() {
             title: 'Delete Goal',
             message: 'Are you sure you want to delete this goal? All phases and tasks associated with it will also be deleted. This action cannot be undone.',
             onConfirm: async () => {
+                if (!dbId) return;
                 try {
                     await databases.deleteDocument(dbId, 'goals', goalId);
                     setGoals(goals.filter(g => g.$id !== goalId));
@@ -153,7 +159,7 @@ export default function GoalsPage() {
 
     const addPhase = async (e: React.FormEvent, goalId: string) => {
         e.preventDefault();
-        if (!newPhaseTitle.trim()) return;
+        if (!newPhaseTitle.trim() || !dbId) return;
 
         try {
             const currentPhases = phases[goalId] || [];
@@ -189,6 +195,7 @@ export default function GoalsPage() {
                 ? `Are you sure you want to delete "${phaseTitle}"? This phase has ${taskCount} task${taskCount > 1 ? 's' : ''} that will also be deleted.`
                 : `Are you sure you want to delete "${phaseTitle}"? This action cannot be undone.`,
             onConfirm: async () => {
+                if (!dbId) return;
                 try {
                     await databases.deleteDocument(dbId, 'phases', phaseId);
                     setPhases(prev => ({
@@ -209,7 +216,7 @@ export default function GoalsPage() {
 
     const addTask = async (e: React.FormEvent, goalId: string, phaseId?: string) => {
         e.preventDefault();
-        if (!newTaskTitle.trim()) return;
+        if (!newTaskTitle.trim() || !dbId) return;
 
         try {
             const response = await databases.createDocument(dbId, 'tasks', ID.unique(), {
@@ -239,6 +246,7 @@ export default function GoalsPage() {
     };
 
     const toggleTask = async (task: Task, goalId: string) => {
+        if (!dbId) return;
         try {
             await databases.updateDocument(dbId, 'tasks', task.$id, {
                 isCompleted: !task.isCompleted
@@ -255,6 +263,7 @@ export default function GoalsPage() {
     };
 
     const deleteTask = async (taskId: string, goalId: string) => {
+        if (!dbId) return;
         try {
             await databases.deleteDocument(dbId, 'tasks', taskId);
             setTasks(prev => ({

@@ -18,7 +18,15 @@ export default function HabitsPage() {
     const [newHabit, setNewHabit] = useState('');
     const [isAdding, setIsAdding] = useState(false);
 
-    const dbId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!;
+    const dbId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
+
+    // Helper to get local date string YYYY-MM-DD
+    const getLocalDateString = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
 
     // Generate last 7 days
     const days = Array.from({ length: 7 }, (_, i) => {
@@ -28,12 +36,16 @@ export default function HabitsPage() {
     });
 
     useEffect(() => {
-        if (user) {
+        if (user && dbId) {
             fetchHabits();
+        } else if (!dbId) {
+            console.error('Missing Database ID');
+            setLoading(false);
         }
-    }, [user]);
+    }, [user, dbId]);
 
     const fetchHabits = async () => {
+        if (!dbId) return;
         try {
             const response = await databases.listDocuments(dbId, 'habits', [
                 Query.equal('userId', user!.$id),
@@ -54,7 +66,7 @@ export default function HabitsPage() {
 
     const addHabit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newHabit.trim()) return;
+        if (!newHabit.trim() || !dbId) return;
 
         try {
             await databases.createDocument(dbId, 'habits', ID.unique(), {
@@ -76,7 +88,8 @@ export default function HabitsPage() {
     };
 
     const toggleHabitDate = async (habit: Habit, date: Date) => {
-        const dateStr = date.toISOString().split('T')[0];
+        if (!dbId) return;
+        const dateStr = getLocalDateString(date);
         const isCompleted = habit.completedDates.includes(dateStr);
 
         let newCompletedDates = [...habit.completedDates];
@@ -86,47 +99,43 @@ export default function HabitsPage() {
             newCompletedDates.push(dateStr);
         }
 
-        // Simple streak calculation: consecutive days ending today or yesterday
-        // This is a simplified version. Real streak logic is more complex.
-        // For MVP, let's just count consecutive days backwards from today.
+        // Simple streak calculation
         let streak = 0;
-        const today = new Date().toISOString().split('T')[0];
-        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+        const today = new Date();
+        const todayStr = getLocalDateString(today);
+
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = getLocalDateString(yesterday);
 
         // Sort dates desc
         const sortedDates = [...newCompletedDates].sort().reverse();
 
-        if (sortedDates.includes(today)) {
+        if (sortedDates.includes(todayStr)) {
             streak = 1;
             let checkDate = new Date();
             while (true) {
                 checkDate.setDate(checkDate.getDate() - 1);
-                const checkStr = checkDate.toISOString().split('T')[0];
+                const checkStr = getLocalDateString(checkDate);
                 if (sortedDates.includes(checkStr)) {
                     streak++;
                 } else {
                     break;
                 }
             }
-        } else if (sortedDates.includes(yesterday)) {
-            // If not done today but done yesterday, streak is kept (but not incremented for today)
-            // Actually, usually streak is "current streak". If you missed today, is it 0? 
-            // Often apps allow "today" to be pending without breaking streak.
-            // Let's count backwards from yesterday.
-            streak = 0; // Reset if not done today? No, that's harsh.
-            // Let's count from yesterday backwards.
+        } else if (sortedDates.includes(yesterdayStr)) {
+            streak = 1; // Current streak is 1 (yesterday), waiting for today
             let checkDate = new Date();
-            checkDate.setDate(checkDate.getDate() - 1); // Start checking from yesterday
-            if (sortedDates.includes(yesterday)) {
-                streak = 1;
-                while (true) {
-                    checkDate.setDate(checkDate.getDate() - 1);
-                    const checkStr = checkDate.toISOString().split('T')[0];
-                    if (sortedDates.includes(checkStr)) {
-                        streak++;
-                    } else {
-                        break;
-                    }
+            checkDate.setDate(checkDate.getDate() - 1); // Start from yesterday
+
+            // Check backwards from yesterday
+            while (true) {
+                checkDate.setDate(checkDate.getDate() - 1);
+                const checkStr = getLocalDateString(checkDate);
+                if (sortedDates.includes(checkStr)) {
+                    streak++;
+                } else {
+                    break;
                 }
             }
         }
@@ -189,7 +198,7 @@ export default function HabitsPage() {
 
                         <div className="grid grid-cols-7 gap-2">
                             {days.map((date, i) => {
-                                const dateStr = date.toISOString().split('T')[0];
+                                const dateStr = getLocalDateString(date);
                                 const isCompleted = habit.completedDates.includes(dateStr);
                                 const isToday = i === 6;
 
