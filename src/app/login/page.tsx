@@ -89,7 +89,8 @@ export default function LoginPage() {
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to authenticate. Please try again.';
             setError(errorMessage);
-            showError(errorMessage);
+            // Note: We use inline error display for auth errors instead of toast
+            // as it's more visible and persistent in this context
         } finally {
             setLoading(false);
         }
@@ -105,7 +106,6 @@ export default function LoginPage() {
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to authenticate with Google';
             setError(errorMessage);
-            showError(errorMessage);
         }
     };
 
