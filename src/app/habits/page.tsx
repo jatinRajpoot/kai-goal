@@ -88,7 +88,7 @@ export default function HabitsPage() {
                 userId: doc.userId
             };
 
-            setHabits([...habits, newHabitObj]);
+            setHabits(prev => [...prev, newHabitObj]);
             setNewHabit('');
             setIsAdding(false);
         } catch (error) {
@@ -149,7 +149,7 @@ export default function HabitsPage() {
         <div className="space-y-6 max-w-4xl mx-auto">
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Habits</h2>
-                <Button onClick={() => setIsAdding(!isAdding)}>
+                <Button onClick={() => setIsAdding(prev => !prev)}>
                     {isAdding ? <X className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
                     {isAdding ? 'Cancel' : 'New Habit'}
                 </Button>
@@ -200,6 +200,7 @@ export default function HabitsPage() {
                                             {date.toLocaleDateString('en-US', { weekday: 'short' })}
                                         </span>
                                         <button
+                                            type="button"
                                             onClick={() => canInteract && toggleHabitDate(habit, date)}
                                             disabled={!canInteract}
                                             className={cn(
@@ -212,7 +213,7 @@ export default function HabitsPage() {
                                                         : "bg-secondary hover:bg-secondary/80 text-muted-foreground",
                                                 isToday && !isCompleted && "ring-2 ring-primary ring-offset-2 ring-offset-background"
                                             )}
-                                            aria-label={`${habit.title} - ${dateStr} - ${isCompleted ? 'Completed' : 'Not Completed'}`}
+                                            aria-label={`Toggle habit ${habit.title} for ${dateStr}, currently ${isCompleted ? 'Completed' : 'Not Completed'}`}
                                         >
                                             {isCompleted ? (
                                                 <Check className="h-5 w-5" />
