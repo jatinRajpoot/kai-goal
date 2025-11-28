@@ -108,6 +108,7 @@ async function setup() {
         console.log('Defining attributes for Habits...');
         await createAttribute(DB_ID, 'habits', 'string', 'title', 255, true);
         await createAttribute(DB_ID, 'habits', 'integer', 'streak', null, false, 0); // Integer for streak count
+        await createAttribute(DB_ID, 'habits', 'integer', 'longestStreak', null, false, 0); // Integer for best streak
         // Better approach for habits: Array of strings for completed dates (ISO date string YYYY-MM-DD)
         await createAttribute(DB_ID, 'habits', 'string', 'completedDates', 20, false, null, true); // Array of strings
         await createAttribute(DB_ID, 'habits', 'string', 'userId', 255, true);
