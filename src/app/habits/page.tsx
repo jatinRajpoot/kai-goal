@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/context/AuthContext';
 import { Habit } from '@/types';
-import { Check, Flame, Plus, X } from 'lucide-react';
+import { Check, Flame, Plus, X, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { calculateStreaks, getLocalDateString, isDateToday } from '@/lib/habit-utils';
 
 export default function HabitsPage() {
     const { user } = useAuth();
@@ -20,22 +21,37 @@ export default function HabitsPage() {
 
     const dbId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
 
-    // Helper to get local date string YYYY-MM-DD
-    const getLocalDateString = (date: Date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
-
-    // Generate last 7 days
+    // Generate last 7 days (including today)
     const days = Array.from({ length: 7 }, (_, i) => {
         const d = new Date();
         d.setDate(d.getDate() - (6 - i));
         return d;
     });
 
+    const todayStr = getLocalDateString(new Date());
+
     useEffect(() => {
+        const fetchHabits = async () => {
+            if (!dbId || !user) return;
+            try {
+                const response = await databases.listDocuments(dbId, 'habits', [
+                    Query.equal('userId', user.$id),
+                ]);
+                setHabits(response.documents.map(doc => ({
+                    $id: doc.$id,
+                    title: doc.title,
+                    streak: doc.streak || 0,
+                    longestStreak: doc.longestStreak || 0,
+                    completedDates: doc.completedDates || [],
+                    userId: doc.userId
+                } as Habit)));
+            } catch (error) {
+                console.error('Error fetching habits:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (user && dbId) {
             fetchHabits();
         } else if (!dbId) {
@@ -44,44 +60,37 @@ export default function HabitsPage() {
         }
     }, [user, dbId]);
 
-    const fetchHabits = async () => {
-        if (!dbId) return;
-        try {
-            const response = await databases.listDocuments(dbId, 'habits', [
-                Query.equal('userId', user!.$id),
-            ]);
-            setHabits(response.documents.map(doc => ({
-                $id: doc.$id,
-                title: doc.title,
-                streak: doc.streak || 0,
-                completedDates: doc.completedDates || [],
-                userId: doc.userId
-            } as Habit)));
-        } catch (error) {
-            console.error('Error fetching habits:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const addHabit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newHabit.trim() || !dbId) return;
+        if (!newHabit.trim() || !dbId || !user) return;
 
         try {
-            await databases.createDocument(dbId, 'habits', ID.unique(), {
+            const initialStreak = { streak: 0, longestStreak: 0 };
+
+            const doc = await databases.createDocument(dbId, 'habits', ID.unique(), {
                 title: newHabit,
-                userId: user!.$id,
-                streak: 0,
+                userId: user.$id,
+                streak: initialStreak.streak,
+                longestStreak: initialStreak.longestStreak,
                 completedDates: []
             }, [
-                Permission.read(Role.user(user!.$id)),
-                Permission.update(Role.user(user!.$id)),
-                Permission.delete(Role.user(user!.$id)),
+                Permission.read(Role.user(user.$id)),
+                Permission.update(Role.user(user.$id)),
+                Permission.delete(Role.user(user.$id)),
             ]);
+
+            const newHabitObj: Habit = {
+                $id: doc.$id,
+                title: doc.title,
+                streak: doc.streak,
+                longestStreak: doc.longestStreak,
+                completedDates: doc.completedDates,
+                userId: doc.userId
+            };
+
+            setHabits([...habits, newHabitObj]);
             setNewHabit('');
             setIsAdding(false);
-            fetchHabits();
         } catch (error) {
             console.error('Error adding habit:', error);
         }
@@ -89,65 +98,40 @@ export default function HabitsPage() {
 
     const toggleHabitDate = async (habit: Habit, date: Date) => {
         if (!dbId) return;
-        const dateStr = getLocalDateString(date);
-        const isCompleted = habit.completedDates.includes(dateStr);
 
+        const dateStr = getLocalDateString(date);
+
+        // Strict Rule: Can only toggle TODAY
+        if (!isDateToday(dateStr)) {
+            return;
+        }
+
+        const isCompleted = habit.completedDates.includes(dateStr);
         let newCompletedDates = [...habit.completedDates];
+
         if (isCompleted) {
             newCompletedDates = newCompletedDates.filter(d => d !== dateStr);
         } else {
             newCompletedDates.push(dateStr);
         }
 
-        // Simple streak calculation
-        let streak = 0;
-        const today = new Date();
-        const todayStr = getLocalDateString(today);
-
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = getLocalDateString(yesterday);
-
-        // Sort dates desc
-        const sortedDates = [...newCompletedDates].sort().reverse();
-
-        if (sortedDates.includes(todayStr)) {
-            streak = 1;
-            let checkDate = new Date();
-            while (true) {
-                checkDate.setDate(checkDate.getDate() - 1);
-                const checkStr = getLocalDateString(checkDate);
-                if (sortedDates.includes(checkStr)) {
-                    streak++;
-                } else {
-                    break;
-                }
-            }
-        } else if (sortedDates.includes(yesterdayStr)) {
-            streak = 1; // Current streak is 1 (yesterday), waiting for today
-            let checkDate = new Date();
-            checkDate.setDate(checkDate.getDate() - 1); // Start from yesterday
-
-            // Check backwards from yesterday
-            while (true) {
-                checkDate.setDate(checkDate.getDate() - 1);
-                const checkStr = getLocalDateString(checkDate);
-                if (sortedDates.includes(checkStr)) {
-                    streak++;
-                } else {
-                    break;
-                }
-            }
-        }
+        // Robust Streak Calculation
+        const { streak, longestStreak } = calculateStreaks(newCompletedDates);
 
         try {
             await databases.updateDocument(dbId, 'habits', habit.$id, {
                 completedDates: newCompletedDates,
-                streak: streak
+                streak: streak,
+                longestStreak: longestStreak
             });
 
-            // Optimistic update
-            setHabits(habits.map(h => h.$id === habit.$id ? { ...h, completedDates: newCompletedDates, streak } : h));
+            // Update local state
+            setHabits(prevHabits => prevHabits.map(h => h.$id === habit.$id ? {
+                ...h,
+                completedDates: newCompletedDates,
+                streak,
+                longestStreak
+            } : h));
         } catch (error) {
             console.error('Error updating habit:', error);
         }
@@ -190,17 +174,25 @@ export default function HabitsPage() {
                     <Card key={habit.$id} className="p-5 hover:shadow-lg transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="font-semibold text-lg text-foreground">{habit.title}</h3>
-                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500/10 rounded-full text-orange-600 dark:text-orange-400 text-sm">
-                                <Flame className="h-4 w-4 fill-current" />
-                                <span className="font-bold">{habit.streak} day streak</span>
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500/10 rounded-full text-orange-600 dark:text-orange-400 text-sm">
+                                    <Flame className="h-4 w-4 fill-current" />
+                                    <span className="font-bold">{habit.streak} day streak</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-500/10 rounded-full text-yellow-600 dark:text-yellow-400 text-sm">
+                                    <Trophy className="h-4 w-4 fill-current" />
+                                    <span className="font-bold">Best: {habit.longestStreak || 0}</span>
+                                </div>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-7 gap-2">
-                            {days.map((date, i) => {
+                            {days.map((date) => {
                                 const dateStr = getLocalDateString(date);
                                 const isCompleted = habit.completedDates.includes(dateStr);
-                                const isToday = i === 6;
+                                const isToday = dateStr === todayStr;
+                                const isPast = dateStr < todayStr;
+                                const canInteract = isToday;
 
                                 return (
                                     <div key={dateStr} className="flex flex-col items-center gap-2">
@@ -208,16 +200,25 @@ export default function HabitsPage() {
                                             {date.toLocaleDateString('en-US', { weekday: 'short' })}
                                         </span>
                                         <button
-                                            onClick={() => toggleHabitDate(habit, date)}
+                                            onClick={() => canInteract && toggleHabitDate(habit, date)}
+                                            disabled={!canInteract}
                                             className={cn(
-                                                "flex h-10 w-10 items-center justify-center rounded-full transition-all cursor-pointer",
+                                                "flex h-10 w-10 items-center justify-center rounded-full transition-all",
+                                                canInteract ? "cursor-pointer" : "cursor-default opacity-80",
                                                 isCompleted
                                                     ? "bg-primary text-primary-foreground shadow-md"
-                                                    : "bg-secondary hover:bg-secondary/80 text-muted-foreground",
+                                                    : isPast
+                                                        ? "bg-destructive/10 text-destructive border border-destructive/20"
+                                                        : "bg-secondary hover:bg-secondary/80 text-muted-foreground",
                                                 isToday && !isCompleted && "ring-2 ring-primary ring-offset-2 ring-offset-background"
                                             )}
+                                            aria-label={`${habit.title} - ${dateStr} - ${isCompleted ? 'Completed' : 'Not Completed'}`}
                                         >
-                                            {isCompleted && <Check className="h-5 w-5" />}
+                                            {isCompleted ? (
+                                                <Check className="h-5 w-5" />
+                                            ) : isPast ? (
+                                                <X className="h-5 w-5" />
+                                            ) : null}
                                         </button>
                                     </div>
                                 );

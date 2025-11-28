@@ -27,8 +27,9 @@ export interface Task {
 export interface Habit {
     $id: string;
     title: string;
-    streak: number; // Calculated field, might not be in DB directly if we compute it
-    completedDates: string[]; // Array of ISO date strings
+    streak: number; // Current streak
+    longestStreak: number; // Best streak
+    completedDates: string[]; // Array of ISO date strings (YYYY-MM-DD)
     userId: string;
 }
 
