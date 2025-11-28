@@ -295,7 +295,7 @@ export default function GoalsPage() {
         <div className="space-y-6 max-w-4xl mx-auto">
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-foreground">Goals</h2>
-                <Button onClick={() => setIsAddingGoal(!isAddingGoal)}>
+                <Button onClick={() => setIsAddingGoal(!isAddingGoal)} aria-label={isAddingGoal ? "Cancel adding goal" : "Add new goal"}>
                     {isAddingGoal ? <X className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
                     {isAddingGoal ? 'Cancel' : 'New Goal'}
                 </Button>
@@ -353,6 +353,7 @@ export default function GoalsPage() {
                                 </div>
                             </div>
                             <button
+                                aria-label={`Delete goal ${goal.title}`}
                                 onClick={(e) => { e.stopPropagation(); deleteGoal(goal.$id); }}
                                 className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors cursor-pointer"
                             >
@@ -369,6 +370,7 @@ export default function GoalsPage() {
                                         <Button
                                             size="sm"
                                             variant="ghost"
+                                            aria-label="Add phase"
                                             onClick={() => setAddingPhaseForGoal(addingPhaseForGoal === goal.$id ? null : goal.$id)}
                                         >
                                             {addingPhaseForGoal === goal.$id ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
@@ -410,6 +412,7 @@ export default function GoalsPage() {
                                                             </div>
                                                             <div className="flex items-center gap-1">
                                                                 <button
+                                                                    aria-label={`Add task to phase ${phase.title}`}
                                                                     onClick={() => {
                                                                         if (addingTaskForPhase !== phase.$id) {
                                                                             setNewTaskDueDate(getTodayDate());
@@ -421,6 +424,7 @@ export default function GoalsPage() {
                                                                     <Plus className="h-4 w-4" />
                                                                 </button>
                                                                 <button
+                                                                    aria-label={`Delete phase ${phase.title}`}
                                                                     onClick={() => deletePhase(phase.$id, goal.$id, phase.title)}
                                                                     className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors cursor-pointer"
                                                                 >
@@ -453,6 +457,7 @@ export default function GoalsPage() {
                                                                 {phaseTasks.map(task => (
                                                                     <li key={task.$id} className="flex items-center group">
                                                                         <button
+                                                                            aria-label={task.isCompleted ? "Mark task as incomplete" : "Mark task as complete"}
                                                                             onClick={() => toggleTask(task, goal.$id)}
                                                                             className={cn(
                                                                                 "mr-3 h-5 w-5 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors",
@@ -470,6 +475,7 @@ export default function GoalsPage() {
                                                                             {task.title}
                                                                         </span>
                                                                         <button
+                                                                            aria-label="Delete task"
                                                                             onClick={() => deleteTask(task.$id, goal.$id)}
                                                                             className="p-1 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
                                                                         >
@@ -499,6 +505,7 @@ export default function GoalsPage() {
                                         <Button
                                             size="sm"
                                             variant="ghost"
+                                            aria-label="Add quick task"
                                             onClick={() => {
                                                 if (addingTaskForGoal !== goal.$id) {
                                                     setNewTaskDueDate(getTodayDate());
@@ -534,6 +541,7 @@ export default function GoalsPage() {
                                             {getUnassignedTasks(goal.$id).map(task => (
                                                 <li key={task.$id} className="flex items-center group">
                                                     <button
+                                                        aria-label={task.isCompleted ? "Mark task as incomplete" : "Mark task as complete"}
                                                         onClick={() => toggleTask(task, goal.$id)}
                                                         className={cn(
                                                             "mr-3 h-5 w-5 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors",
@@ -551,6 +559,7 @@ export default function GoalsPage() {
                                                         {task.title}
                                                     </span>
                                                     <button
+                                                        aria-label="Delete task"
                                                         onClick={() => deleteTask(task.$id, goal.$id)}
                                                         className="p-1 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
                                                     >
