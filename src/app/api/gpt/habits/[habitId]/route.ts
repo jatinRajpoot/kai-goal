@@ -14,6 +14,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ ha
     }
 
     const { habitId } = await params;
+    const db = databases();
+    const dbId = DATABASE_ID();
 
     try {
         const body = await req.json();
@@ -24,7 +26,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ ha
         }
 
         // Fetch habit
-        const habit = await databases.getDocument(DATABASE_ID, 'habits', habitId);
+        const habit = await db.getDocument(dbId, 'habits', habitId);
 
         if (habit.userId !== userId) {
             return NextResponse.json({ error: 'Habit not found or access denied' }, { status: 404 });
@@ -35,19 +37,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ ha
         // Add date if not already present
         if (!completedDates.includes(date)) {
             completedDates.push(date);
-        } else {
-             // If already completed, we might want to return success or error.
-             // The requirement says "Adds the date to completedDates (ensuring no duplicates)".
-             // It doesn't explicitly say what to do if it's already there.
-             // I'll assume idempotency is fine.
         }
+        // If already completed, we return success (idempotent)
 
         // Recalculate streaks
         const { streak, longestStreak } = calculateStreaks(completedDates);
 
         // Update habit
-        const doc = await databases.updateDocument(
-            DATABASE_ID,
+        const doc = await db.updateDocument(
+            dbId,
             'habits',
             habitId,
             {

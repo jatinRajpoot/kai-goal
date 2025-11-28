@@ -14,6 +14,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pha
     }
 
     const { phaseId } = await params;
+    const db = databases();
+    const dbId = DATABASE_ID();
 
     try {
         const body = await req.json();
@@ -23,19 +25,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pha
             return NextResponse.json({ error: 'Title is required' }, { status: 400 });
         }
 
-        // Verify phase (and implicitly goal) ownership could be added here
-        // For now, we trust the API key context and phase existence check
-
         // Check if phase exists
         try {
-             // We can fetch the phase to ensure it exists and maybe check ownership via goal if we wanted to be strict
-             await databases.getDocument(DATABASE_ID, 'phases', phaseId);
-        } catch (e) {
+             await db.getDocument(dbId, 'phases', phaseId);
+        } catch {
              return NextResponse.json({ error: 'Phase not found' }, { status: 404 });
         }
 
-        const doc = await databases.createDocument(
-            DATABASE_ID,
+        const doc = await db.createDocument(
+            dbId,
             'tasks',
             ID.unique(),
             {
@@ -43,7 +41,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pha
                 dueDate,
                 phaseId,
                 isCompleted: false,
-                userId // Tasks have userId based on schema
+                userId
             }
         );
 

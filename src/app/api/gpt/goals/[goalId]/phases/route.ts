@@ -14,6 +14,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ goa
     }
 
     const { goalId } = await params;
+    const db = databases();
+    const dbId = DATABASE_ID();
 
     try {
         const body = await req.json();
@@ -25,16 +27,16 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ goa
 
         // Verify goal ownership (optional but recommended)
         try {
-            const goal = await databases.getDocument(DATABASE_ID, 'goals', goalId);
+            const goal = await db.getDocument(dbId, 'goals', goalId);
             if (goal.userId !== userId) {
                  return NextResponse.json({ error: 'Goal not found or access denied' }, { status: 404 });
             }
-        } catch (e) {
+        } catch {
              return NextResponse.json({ error: 'Goal not found' }, { status: 404 });
         }
 
-        const doc = await databases.createDocument(
-            DATABASE_ID,
+        const doc = await db.createDocument(
+            dbId,
             'phases',
             ID.unique(),
             {

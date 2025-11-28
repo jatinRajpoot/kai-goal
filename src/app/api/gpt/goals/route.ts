@@ -13,6 +13,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Invalid API Key' }, { status: 401 });
     }
 
+    const db = databases();
+    const dbId = DATABASE_ID();
+
     try {
         const body = await req.json();
         const { title, description, deadline } = body;
@@ -21,8 +24,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Title is required' }, { status: 400 });
         }
 
-        const doc = await databases.createDocument(
-            DATABASE_ID,
+        const doc = await db.createDocument(
+            dbId,
             'goals',
             ID.unique(),
             {

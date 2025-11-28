@@ -1,14 +1,17 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { databases } from '@/lib/appwrite';
 import { Query } from 'appwrite';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { PageLoader } from '@/components/ui/LoadingSpinner';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/components/ui/Toast';
 import { Goal, Phase, Task } from '@/types';
-import { ChevronDown, ChevronRight, Plus, X, Check, Circle, Trash2, Calendar } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus, X, Check, Trash2, Calendar, Target, RefreshCw } from 'lucide-react';
 
 import { Input } from '@/components/ui/Input';
 import { ID, Permission, Role } from 'appwrite';
@@ -22,16 +25,19 @@ const getTodayDate = () => {
 
 export default function GoalsPage() {
     const { user } = useAuth();
+    const { success, error: showError } = useToast();
     const [goals, setGoals] = useState<Goal[]>([]);
     const [expandedGoal, setExpandedGoal] = useState<string | null>(null);
     const [phases, setPhases] = useState<Record<string, Phase[]>>({});
     const [tasks, setTasks] = useState<Record<string, Task[]>>({});
     const [loading, setLoading] = useState(true);
+    const [hasError, setHasError] = useState(false);
 
     // Goal creation
     const [isAddingGoal, setIsAddingGoal] = useState(false);
     const [newGoalTitle, setNewGoalTitle] = useState('');
     const [newGoalDeadline, setNewGoalDeadline] = useState('');
+    const [isSubmittingGoal, setIsSubmittingGoal] = useState(false);
 
     // Phase creation
     const [addingPhaseForGoal, setAddingPhaseForGoal] = useState<string | null>(null);
@@ -58,6 +64,24 @@ export default function GoalsPage() {
 
     const dbId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
 
+    const fetchGoals = useCallback(async () => {
+        if (!dbId || !user) return;
+        try {
+            setHasError(false);
+            const response = await databases.listDocuments(dbId, 'goals', [
+                Query.equal('userId', user.$id),
+                Query.orderDesc('$createdAt'),
+            ]);
+            setGoals(response.documents as unknown as Goal[]);
+        } catch (err) {
+            console.error('Error fetching goals:', err);
+            setHasError(true);
+            showError('Failed to load goals. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    }, [dbId, user, showError]);
+
     useEffect(() => {
         if (user && dbId) {
             fetchGoals();
@@ -65,22 +89,7 @@ export default function GoalsPage() {
             console.error('Missing Database ID');
             setLoading(false);
         }
-    }, [user, dbId]);
-
-    const fetchGoals = async () => {
-        if (!dbId) return;
-        try {
-            const response = await databases.listDocuments(dbId, 'goals', [
-                Query.equal('userId', user!.$id),
-                Query.orderDesc('$createdAt'),
-            ]);
-            setGoals(response.documents as unknown as Goal[]);
-        } catch (error) {
-            console.error('Error fetching goals:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    }, [user, dbId, fetchGoals]);
 
     const fetchGoalDetails = async (goalId: string) => {
         if (!dbId) return;
@@ -101,8 +110,9 @@ export default function GoalsPage() {
             const goalTasks = tasksRes.documents as unknown as Task[];
             setTasks(prev => ({ ...prev, [goalId]: goalTasks }));
 
-        } catch (error) {
-            console.error('Error fetching goal details:', error);
+        } catch (err) {
+            console.error('Error fetching goal details:', err);
+            showError('Failed to load goal details.');
         }
     };
 
@@ -119,6 +129,7 @@ export default function GoalsPage() {
         e.preventDefault();
         if (!newGoalTitle.trim() || !dbId) return;
 
+        setIsSubmittingGoal(true);
         try {
             const response = await databases.createDocument(dbId, 'goals', ID.unique(), {
                 title: newGoalTitle,
@@ -134,8 +145,12 @@ export default function GoalsPage() {
             setNewGoalTitle('');
             setNewGoalDeadline('');
             setIsAddingGoal(false);
-        } catch (error) {
-            console.error('Error adding goal:', error);
+            success('Goal created successfully! 🎯');
+        } catch (err) {
+            console.error('Error adding goal:', err);
+            showError('Failed to create goal. Please try again.');
+        } finally {
+            setIsSubmittingGoal(false);
         }
     };
 
@@ -150,8 +165,10 @@ export default function GoalsPage() {
                     await databases.deleteDocument(dbId, 'goals', goalId);
                     setGoals(goals.filter(g => g.$id !== goalId));
                     if (expandedGoal === goalId) setExpandedGoal(null);
-                } catch (error) {
-                    console.error('Error deleting goal:', error);
+                    success('Goal deleted successfully.');
+                } catch (err) {
+                    console.error('Error deleting goal:', err);
+                    showError('Failed to delete goal. Please try again.');
                 }
             },
         });
@@ -179,8 +196,10 @@ export default function GoalsPage() {
             }));
             setNewPhaseTitle('');
             setAddingPhaseForGoal(null);
-        } catch (error) {
-            console.error('Error adding phase:', error);
+            success('Phase added successfully!');
+        } catch (err) {
+            console.error('Error adding phase:', err);
+            showError('Failed to add phase. Please try again.');
         }
     };
 
@@ -207,8 +226,10 @@ export default function GoalsPage() {
                         ...prev,
                         [goalId]: (prev[goalId] || []).filter(t => t.phaseId !== phaseId)
                     }));
-                } catch (error) {
-                    console.error('Error deleting phase:', error);
+                    success('Phase deleted successfully.');
+                } catch (err) {
+                    console.error('Error deleting phase:', err);
+                    showError('Failed to delete phase. Please try again.');
                 }
             },
         });
@@ -240,8 +261,10 @@ export default function GoalsPage() {
             setNewTaskDueDate('');
             setAddingTaskForPhase(null);
             setAddingTaskForGoal(null);
-        } catch (error) {
-            console.error('Error adding task:', error);
+            success('Task added successfully!');
+        } catch (err) {
+            console.error('Error adding task:', err);
+            showError('Failed to add task. Please try again.');
         }
     };
 
@@ -257,8 +280,12 @@ export default function GoalsPage() {
                     t.$id === task.$id ? { ...t, isCompleted: !t.isCompleted } : t
                 )
             }));
-        } catch (error) {
-            console.error('Error toggling task:', error);
+            if (!task.isCompleted) {
+                success('Task completed! 🎉');
+            }
+        } catch (err) {
+            console.error('Error toggling task:', err);
+            showError('Failed to update task. Please try again.');
         }
     };
 
@@ -270,8 +297,10 @@ export default function GoalsPage() {
                 ...prev,
                 [goalId]: (prev[goalId] || []).filter(t => t.$id !== taskId)
             }));
-        } catch (error) {
-            console.error('Error deleting task:', error);
+            success('Task deleted.');
+        } catch (err) {
+            console.error('Error deleting task:', err);
+            showError('Failed to delete task. Please try again.');
         }
     };
 
@@ -284,16 +313,30 @@ export default function GoalsPage() {
     };
 
     if (loading) {
+        return <PageLoader text="Loading goals..." />;
+    }
+
+    if (hasError) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+            <div className="max-w-4xl mx-auto w-full">
+                <EmptyState
+                    icon={RefreshCw}
+                    title="Failed to load goals"
+                    description="We couldn't load your goals. Please check your connection and try again."
+                    action={
+                        <Button onClick={fetchGoals}>
+                            <RefreshCw className="mr-2 h-4 w-4" />
+                            Try Again
+                        </Button>
+                    }
+                />
             </div>
         );
     }
 
     return (
-        <div className="space-y-6 max-w-4xl mx-auto">
-            <div className="flex items-center justify-between">
+        <div className="space-y-6 max-w-4xl mx-auto w-full">
+            <div className="flex items-center justify-between flex-wrap gap-4">
                 <h2 className="text-2xl font-bold text-foreground">Goals</h2>
                 <Button onClick={() => setIsAddingGoal(!isAddingGoal)} aria-label={isAddingGoal ? "Cancel adding goal" : "Add new goal"}>
                     {isAddingGoal ? <X className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
@@ -321,9 +364,9 @@ export default function GoalsPage() {
                                 onChange={(e) => setNewGoalDeadline(e.target.value)}
                             />
                         </div>
-                        <div className="flex justify-end gap-2">
+                        <div className="flex flex-col sm:flex-row justify-end gap-2">
                             <Button type="button" variant="ghost" onClick={() => setIsAddingGoal(false)}>Cancel</Button>
-                            <Button type="submit">Create Goal</Button>
+                            <Button type="submit" loading={isSubmittingGoal}>Create Goal</Button>
                         </div>
                     </form>
                 </Card>
@@ -333,7 +376,7 @@ export default function GoalsPage() {
                 {goals.map(goal => (
                     <Card key={goal.$id} className="overflow-hidden p-0 hover:shadow-lg transition-all">
                         <div
-                            className="flex cursor-pointer items-center justify-between p-5 hover:bg-accent/50 transition-colors"
+                            className="flex cursor-pointer items-center justify-between p-4 sm:p-5 hover:bg-accent/50 transition-colors"
                             onClick={() => toggleGoal(goal.$id)}
                         >
                             <div className="flex items-center flex-1">
@@ -355,14 +398,14 @@ export default function GoalsPage() {
                             <button
                                 aria-label={`Delete goal ${goal.title}`}
                                 onClick={(e) => { e.stopPropagation(); deleteGoal(goal.$id); }}
-                                className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors cursor-pointer"
+                                className="p-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
                             >
                                 <Trash2 className="h-4 w-4" />
                             </button>
                         </div>
 
                         {expandedGoal === goal.$id && (
-                            <div className="border-t border-border bg-muted/30 p-5 space-y-6">
+                            <div className="border-t border-border bg-muted/30 p-4 sm:p-5 space-y-6">
                                 {/* Phases Section */}
                                 <div>
                                     <div className="flex items-center justify-between mb-3">
@@ -378,7 +421,7 @@ export default function GoalsPage() {
                                     </div>
 
                                     {addingPhaseForGoal === goal.$id && (
-                                        <form onSubmit={(e) => addPhase(e, goal.$id)} className="mb-4 flex gap-2">
+                                        <form onSubmit={(e) => addPhase(e, goal.$id)} className="mb-4 flex flex-col sm:flex-row gap-2">
                                             <Input
                                                 value={newPhaseTitle}
                                                 onChange={(e) => setNewPhaseTitle(e.target.value)}
@@ -561,7 +604,7 @@ export default function GoalsPage() {
                                                     <button
                                                         aria-label="Delete task"
                                                         onClick={() => deleteTask(task.$id, goal.$id)}
-                                                        className="p-1 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
+                                                        className="p-2 text-muted-foreground hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100 transition-all cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center -m-2"
                                                     >
                                                         <X className="h-4 w-4" />
                                                     </button>
@@ -579,13 +622,17 @@ export default function GoalsPage() {
                     </Card>
                 ))}
                 {goals.length === 0 && !isAddingGoal && (
-                    <Card className="flex flex-col items-center justify-center py-12">
-                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                            <Plus className="h-6 w-6 text-primary" />
-                        </div>
-                        <p className="text-muted-foreground text-lg">No goals yet.</p>
-                        <p className="text-muted-foreground/70 text-sm">Create your first goal to get started!</p>
-                    </Card>
+                    <EmptyState
+                        icon={Target}
+                        title="No goals yet"
+                        description="Create your first goal to get started on your journey!"
+                        action={
+                            <Button onClick={() => setIsAddingGoal(true)}>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Create Goal
+                            </Button>
+                        }
+                    />
                 )}
             </div>
 
