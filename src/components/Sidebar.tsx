@@ -12,6 +12,7 @@ import {
     FolderIcon,
     InboxIcon,
     LogOutIcon,
+    SettingsIcon,
     X
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -23,6 +24,7 @@ const navItems = [
     { name: 'Habits', href: '/habits', icon: ActivityIcon },
     { name: 'Resources', href: '/resources', icon: FolderIcon },
     { name: 'Inbox', href: '/inbox', icon: InboxIcon },
+    { name: 'Settings', href: '/settings', icon: SettingsIcon },
 ];
 
 interface SidebarProps {

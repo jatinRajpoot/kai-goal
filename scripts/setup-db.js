@@ -56,6 +56,7 @@ async function setup() {
             { name: 'Habits', id: 'habits' },
             { name: 'Resources', id: 'resources' },
             { name: 'Inbox', id: 'inbox' },
+            { name: 'API Keys', id: 'api_keys' },
         ];
 
         // Permissions: Allow any authenticated user to create, and document-level permissions for read/update/delete
@@ -126,6 +127,12 @@ async function setup() {
         await createAttribute(DB_ID, 'inbox', 'string', 'userId', 255, true);
         await createAttribute(DB_ID, 'inbox', 'boolean', 'isProcessed', null, false, false);
 
+        // API Keys
+        console.log('Defining attributes for API Keys...');
+        await createAttribute(DB_ID, 'api_keys', 'string', 'userId', 255, true);
+        await createAttribute(DB_ID, 'api_keys', 'string', 'key', 255, true);
+        await createAttribute(DB_ID, 'api_keys', 'datetime', 'createdAt', null, true);
+
         // 4. Create Indexes for queries
         console.log('Creating indexes...');
         await createIndex(DB_ID, 'goals', 'userId_idx', 'key', ['userId']);
@@ -137,6 +144,8 @@ async function setup() {
         await createIndex(DB_ID, 'resources', 'userId_idx', 'key', ['userId']);
         await createIndex(DB_ID, 'inbox', 'userId_idx', 'key', ['userId']);
         await createIndex(DB_ID, 'inbox', 'userId_isProcessed_idx', 'key', ['userId', 'isProcessed']);
+        await createIndex(DB_ID, 'api_keys', 'key_idx', 'unique', ['key']);
+        await createIndex(DB_ID, 'api_keys', 'userId_idx', 'key', ['userId']);
 
         // 5. Create Storage Bucket
         console.log('Creating Storage Bucket...');
