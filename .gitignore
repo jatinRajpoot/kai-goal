@@ -14,6 +14,8 @@
 /.next/
 /out/
 
+# screens
+/screenshots
 /uiscreens
 # production
 /build
