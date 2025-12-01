@@ -189,7 +189,7 @@ export default function HabitsPage() {
             </div>
 
             {isAdding && (
-                <Card className="p-4 animate-in fade-in slide-in-from-top-2">
+                <Card className="p-5 animate-in fade-in slide-in-from-top-2">
                     <form onSubmit={addHabit} className="flex flex-col sm:flex-row gap-3">
                         <Input
                             value={newHabit}
@@ -205,15 +205,15 @@ export default function HabitsPage() {
 
             <div className="space-y-4">
                 {habits.map(habit => (
-                    <Card key={habit.$id} className="p-4 sm:p-5 hover:shadow-md transition-all">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <Card key={habit.$id} className="p-5 sm:p-6 hover:shadow-md hover:translate-y-[-1px] transition-all">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
                             <h3 className="font-semibold text-lg text-foreground">{habit.title}</h3>
-                            <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
-                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 rounded-full text-orange-600 text-sm">
+                            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/30 dark:to-amber-900/30 rounded-full text-orange-600 dark:text-orange-400 text-sm shadow-sm">
                                     <Flame className="h-4 w-4 fill-current" />
                                     <span className="font-bold">{habit.streak} day{habit.streak !== 1 ? 's' : ''}</span>
                                 </div>
-                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-50 rounded-full text-yellow-600 text-sm">
+                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/30 dark:to-amber-900/30 rounded-full text-yellow-600 dark:text-yellow-400 text-sm shadow-sm">
                                     <Trophy className="h-4 w-4 fill-current" />
                                     <span className="font-bold">Best: {habit.longestStreak || 0}</span>
                                 </div>
@@ -232,7 +232,7 @@ export default function HabitsPage() {
                                     <div key={dateStr} className="flex flex-col items-center gap-1 sm:gap-2">
                                         <span className={cn(
                                             "text-xs truncate w-full text-center",
-                                            isToday ? "font-bold text-primary" : "text-muted-foreground"
+                                            isToday ? "font-bold text-foreground" : "text-muted-foreground"
                                         )}>
                                             {date.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0)}
                                             <span className="hidden sm:inline">{date.toLocaleDateString('en-US', { weekday: 'short' }).slice(1)}</span>
@@ -242,14 +242,14 @@ export default function HabitsPage() {
                                             onClick={() => canInteract && toggleHabitDate(habit, date)}
                                             disabled={!canInteract}
                                             className={cn(
-                                                "flex h-10 w-10 sm:h-10 sm:w-10 items-center justify-center rounded-full transition-all min-h-[44px] min-w-[44px]",
+                                                "flex h-10 w-10 sm:h-10 sm:w-10 items-center justify-center rounded-xl transition-all min-h-[44px] min-w-[44px]",
                                                 canInteract ? "cursor-pointer" : "cursor-default opacity-80",
                                                 isCompleted
-                                                    ? "bg-primary text-primary-foreground shadow-md"
+                                                    ? "bg-[#111] dark:bg-white text-white dark:text-gray-900 shadow-md"
                                                     : isPast
-                                                        ? "bg-destructive/10 text-destructive border border-destructive/20"
-                                                        : "bg-secondary hover:bg-secondary/80 text-muted-foreground",
-                                                isToday && !isCompleted && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                                                        ? "bg-red-50 dark:bg-red-900/30 text-red-400 dark:text-red-400"
+                                                        : "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-muted-foreground",
+                                                isToday && !isCompleted && "ring-2 ring-[#111] dark:ring-white ring-offset-2 ring-offset-background"
                                             )}
                                             aria-label={`Toggle habit ${habit.title} for ${dateStr}, currently ${isCompleted ? 'Completed' : 'Not Completed'}`}
                                         >

@@ -1,43 +1,58 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F7F8FA;
-  --foreground: #111111;
-  --muted: #f4f4f5;
-  --muted-foreground: #737373;
+  /* Apple-esque soft background canvas */
+  --background: #F5F5F7;
+  /* Typography - Soft black for headings */
+  --foreground: #1A1A1A;
+  /* Muted backgrounds */
+  --muted: #F0F0F2;
+  /* Body text - Dark gray */
+  --muted-foreground: #4B5563;
+  /* Primary - Deep black for strong actions */
   --primary: #111111;
   --primary-foreground: #ffffff;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #111111;
-  --accent: #f4f4f5;
-  --accent-foreground: #111111;
+  /* Secondary surfaces */
+  --secondary: #F0F0F2;
+  --secondary-foreground: #1A1A1A;
+  /* Accent for hover states */
+  --accent: #E8E8EC;
+  --accent-foreground: #1A1A1A;
+  /* Destructive actions */
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: rgba(0,0,0,0.05);
-  --input: #e5e5e5;
-  --ring: #0a0a0a;
+  /* Very subtle border - almost invisible */
+  --border: rgba(0,0,0,0.04);
+  /* Input backgrounds */
+  --input: #F0F0F2;
+  /* Focus ring */
+  --ring: rgba(0,0,0,0.08);
+  /* Card surfaces - Pure white for lift effect */
   --card: #ffffff;
-  --card-foreground: #111111;
+  --card-foreground: #1A1A1A;
+  /* Tertiary/Labels color */
+  --tertiary: #9CA3AF;
 }
 
 .dark {
   --background: #09090b;
   --foreground: #fafafa;
-  --muted: #27272a;
+  --muted: #1C1C1E;
   --muted-foreground: #a1a1aa;
   --primary: #fafafa;
   --primary-foreground: #09090b;
-  --secondary: #27272a;
+  --secondary: #1C1C1E;
   --secondary-foreground: #fafafa;
   --accent: #27272a;
   --accent-foreground: #fafafa;
   --destructive: #7f1d1d;
   --destructive-foreground: #fef2f2;
-  --border: #27272a;
-  --input: #27272a;
-  --ring: #d4d4d8;
+  --border: rgba(255,255,255,0.06);
+  --input: #1C1C1E;
+  --ring: rgba(255,255,255,0.1);
   --card: #18181b;
   --card-foreground: #fafafa;
+  --tertiary: #71717a;
 }
 
 * {

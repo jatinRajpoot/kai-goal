@@ -105,7 +105,7 @@ export default function TasksPage() {
         <div className="space-y-6 max-w-4xl mx-auto w-full">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <h2 className="text-2xl font-bold text-foreground">Tasks</h2>
-                <div className="flex space-x-1 bg-secondary p-1 rounded-xl w-full sm:w-auto">
+                <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-full sm:w-auto">
                     {(['active', 'completed', 'all'] as const).map((f) => (
                         <button
                             key={f}
@@ -113,7 +113,7 @@ export default function TasksPage() {
                             className={cn(
                                 'flex-1 sm:flex-none px-4 py-2 text-sm font-medium rounded-lg transition-all cursor-pointer min-h-[44px]',
                                 filter === f
-                                    ? 'bg-background text-foreground shadow-sm'
+                                    ? 'bg-white dark:bg-card text-foreground shadow-sm'
                                     : 'text-muted-foreground hover:text-foreground'
                             )}
                         >
@@ -125,7 +125,7 @@ export default function TasksPage() {
 
             <div className="space-y-3">
                 {tasks.map(task => (
-                    <Card key={task.$id} className="flex items-center p-4 hover:shadow-md transition-all group">
+                    <Card key={task.$id} className="flex items-center p-5 hover:shadow-md hover:translate-y-[-1px] transition-all group">
                         <button
                             onClick={() => toggleTask(task.$id, task.isCompleted)}
                             className={cn(
@@ -134,12 +134,12 @@ export default function TasksPage() {
                             )}
                             aria-label={task.isCompleted ? `Mark "${task.title}" as incomplete` : `Mark "${task.title}" as complete`}
                         >
-                            {task.isCompleted ? <CheckCircle2 className="h-6 w-6" /> : <Circle className="h-6 w-6" />}
+                            {task.isCompleted ? <CheckCircle2 className="h-6 w-6" /> : <Circle className="h-6 w-6 stroke-[1.5]" />}
                         </button>
                         <div className="flex-1 min-w-0">
                             <h3 className={cn(
                                 'font-medium truncate',
-                                task.isCompleted ? 'line-through text-muted-foreground' : 'text-foreground group-hover:text-primary'
+                                task.isCompleted ? 'line-through text-muted-foreground' : 'text-foreground'
                             )}>
                                 {task.title}
                             </h3>

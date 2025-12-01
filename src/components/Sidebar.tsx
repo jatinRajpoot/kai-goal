@@ -34,14 +34,14 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     const pathname = usePathname();
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
 
     return (
         <>
             {/* Mobile Overlay */}
             <div
                 className={cn(
-                    "fixed inset-0 z-40 bg-background/80 backdrop-blur-sm transition-opacity md:hidden",
+                    "fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-opacity md:hidden",
                     isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 onClick={onClose}
@@ -56,12 +56,12 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                 )}
                 aria-label="Main navigation"
             >
-                <div className="flex h-full flex-col bg-card rounded-3xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-border">
+                <div className="flex h-full flex-col bg-white/70 dark:bg-card/70 backdrop-blur-xl rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-white/50 dark:border-gray-800/50">
                 <div className="flex h-16 items-center justify-between px-6 mb-2">
                     <span className="text-xl font-bold tracking-tight text-foreground">Kai</span>
                     <button
                         onClick={onClose}
-                        className="md:hidden p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer"
+                        className="md:hidden p-2 text-muted-foreground hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer"
                         aria-label="Close navigation menu"
                     >
                         <X className="h-5 w-5" />
@@ -77,17 +77,17 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                                 href={item.href}
                                 onClick={() => onClose?.()}
                                 className={cn(
-                                    'group flex items-center rounded-full px-4 py-3 text-sm font-medium transition-all duration-200 cursor-pointer min-h-[44px]',
+                                    'group flex items-center rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 cursor-pointer min-h-[44px]',
                                     isActive
-                                        ? 'bg-primary text-primary-foreground shadow-sm'
-                                        : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                                        ? 'bg-white dark:bg-gray-800 text-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:bg-white/60 dark:hover:bg-gray-800/60 hover:text-foreground'
                                 )}
                                 aria-current={isActive ? 'page' : undefined}
                             >
                                 <item.icon 
                                     className={cn(
                                         'mr-3 h-5 w-5 transition-colors flex-shrink-0', 
-                                        isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-foreground'
+                                        isActive ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'
                                     )} 
                                 />
                                 <span className="truncate">{item.name}</span>
@@ -96,12 +96,22 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                     })}
                 </nav>
 
-                <div className="p-4 mt-auto">
+                {/* Profile Section at bottom */}
+                <div className="p-4 mt-auto border-t border-gray-100 dark:border-gray-800/50">
+                    <div className="flex items-center gap-3 px-3 py-2 mb-2">
+                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center text-foreground font-medium text-sm shadow-inner">
+                            {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground truncate">{user?.name || 'User'}</p>
+                            <p className="text-xs text-muted-foreground truncate">{user?.email || ''}</p>
+                        </div>
+                    </div>
                     <button
                         onClick={() => logout()}
-                        className="group flex w-full items-center rounded-full px-4 py-3 text-sm font-medium text-muted-foreground transition-all duration-200 cursor-pointer hover:bg-destructive/10 hover:text-destructive min-h-[44px]"
+                        className="group flex w-full items-center rounded-xl px-4 py-3 text-sm font-medium text-muted-foreground transition-all duration-200 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 min-h-[44px]"
                     >
-                        <LogOutIcon className="mr-3 h-5 w-5 text-muted-foreground group-hover:text-destructive transition-colors flex-shrink-0" />
+                        <LogOutIcon className="mr-3 h-5 w-5 text-muted-foreground group-hover:text-red-500 transition-colors flex-shrink-0" />
                         Logout
                     </button>
                 </div>

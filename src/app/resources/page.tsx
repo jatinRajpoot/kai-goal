@@ -164,14 +164,14 @@ export default function ResourcesPage() {
 
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {resources.map(resource => (
-                    <Card key={resource.$id} className="p-5 flex flex-col justify-between min-h-[144px] hover:shadow-md transition-all group">
+                    <Card key={resource.$id} className="p-5 flex flex-col justify-between min-h-[144px] hover:shadow-md hover:translate-y-[-1px] transition-all group">
                         <div className="flex items-start justify-between">
                             <div className="flex items-center space-x-3 overflow-hidden flex-1 min-w-0">
-                                <div className="p-3 bg-primary/5 rounded-xl flex-shrink-0">
-                                    <FileIcon className="h-6 w-6 text-primary" />
+                                <div className="p-3 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl flex-shrink-0 shadow-inner">
+                                    <FileIcon className="h-6 w-6 text-foreground" />
                                 </div>
                                 <span 
-                                    className="font-medium text-foreground truncate group-hover:text-primary transition-colors" 
+                                    className="font-medium text-foreground truncate" 
                                     title={resource.title}
                                 >
                                     {resource.title}
@@ -184,7 +184,7 @@ export default function ResourcesPage() {
                                 size="sm" 
                                 variant="ghost" 
                                 onClick={() => downloadResource(resource.fileId, resource.title)} 
-                                className="text-muted-foreground hover:text-primary min-h-[44px] min-w-[44px]"
+                                className="text-muted-foreground hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-800 min-h-[44px] min-w-[44px]"
                                 aria-label={`Download ${resource.title}`}
                             >
                                 <Download className="h-4 w-4" />
@@ -193,7 +193,7 @@ export default function ResourcesPage() {
                                 size="sm" 
                                 variant="ghost" 
                                 onClick={() => handleDeleteClick(resource)} 
-                                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 min-h-[44px] min-w-[44px]"
+                                className="text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 min-h-[44px] min-w-[44px]"
                                 aria-label={`Delete ${resource.title}`}
                             >
                                 <Trash2 className="h-4 w-4" />

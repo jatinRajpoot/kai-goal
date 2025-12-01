@@ -117,10 +117,10 @@ export default function LoginPage() {
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className="w-full max-w-md"
             >
-                <Card className="p-8 shadow-2xl shadow-black/5 border-border/50 backdrop-blur-sm">
+                <Card className="p-8 shadow-[0_8px_32px_rgba(0,0,0,0.08)] border-gray-100/80 dark:border-gray-800/50">
                     <div className="mb-8 text-center">
-                        <div className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-primary/20">
-                            <span className="text-xl font-bold text-primary-foreground">K</span>
+                        <div className="mx-auto w-14 h-14 bg-[#111] rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                            <span className="text-2xl font-bold text-white">K</span>
                         </div>
                         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
                             {isSignUp ? 'Create an account' : 'Welcome back'}
@@ -137,7 +137,7 @@ export default function LoginPage() {
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}
                             >
-                                <label className="block text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider">Name</label>
+                                <label className="block text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">Name</label>
                                 <Input
                                     type="text"
                                     placeholder="Enter your name"
@@ -148,7 +148,7 @@ export default function LoginPage() {
                             </motion.div>
                         )}
                         <div>
-                            <label className="block text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider">Email</label>
+                            <label className="block text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">Email</label>
                             <Input
                                 type="email"
                                 placeholder="name@example.com"
@@ -162,7 +162,7 @@ export default function LoginPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider">Password</label>
+                            <label className="block text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">Password</label>
                             <Input
                                 type="password"
                                 placeholder="••••••••"
@@ -180,9 +180,9 @@ export default function LoginPage() {
                             <motion.div
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="p-3 rounded-lg bg-destructive/10 border border-destructive/20"
+                                className="p-4 rounded-2xl bg-red-50 dark:bg-red-900/20"
                             >
-                                <p className="text-sm text-destructive font-medium">{error}</p>
+                                <p className="text-sm text-red-600 dark:text-red-400 font-medium">{error}</p>
                             </motion.div>
                         )}
 
@@ -194,10 +194,10 @@ export default function LoginPage() {
                     <div className="mt-8">
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-border" />
+                                <span className="w-full border-t border-gray-200 dark:border-gray-800" />
                             </div>
                             <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-card px-3 text-muted-foreground font-medium">Or continue with</span>
+                                <span className="bg-card px-4 text-muted-foreground font-medium tracking-wider">Or continue with</span>
                             </div>
                         </div>
 
@@ -228,7 +228,7 @@ export default function LoginPage() {
                                 setEmailError('');
                                 setPasswordError('');
                             }}
-                            className="font-medium text-primary hover:underline cursor-pointer min-h-[44px] px-1"
+                            className="font-medium text-foreground hover:text-muted-foreground cursor-pointer min-h-[44px] px-2 underline underline-offset-4"
                         >
                             {isSignUp ? 'Sign In' : 'Sign Up'}
                         </button>
