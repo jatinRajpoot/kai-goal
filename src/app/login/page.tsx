@@ -119,8 +119,8 @@ export default function LoginPage() {
             >
                 <Card className="p-8 shadow-[0_8px_32px_rgba(0,0,0,0.08)] border-gray-100/80 dark:border-gray-800/50">
                     <div className="mb-8 text-center">
-                        <div className="mx-auto w-14 h-14 bg-[#111] rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-                            <span className="text-2xl font-bold text-white">K</span>
+                        <div className="mx-auto w-14 h-14 bg-primary rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                            <span className="text-2xl font-bold text-primary-foreground">K</span>
                         </div>
                         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
                             {isSignUp ? 'Create an account' : 'Welcome back'}

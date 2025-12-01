@@ -245,11 +245,11 @@ export default function HabitsPage() {
                                                 "flex h-10 w-10 sm:h-10 sm:w-10 items-center justify-center rounded-xl transition-all min-h-[44px] min-w-[44px]",
                                                 canInteract ? "cursor-pointer" : "cursor-default opacity-80",
                                                 isCompleted
-                                                    ? "bg-[#111] dark:bg-white text-white dark:text-gray-900 shadow-md"
+                                                    ? "bg-primary dark:bg-primary-foreground text-primary-foreground dark:text-primary shadow-md"
                                                     : isPast
                                                         ? "bg-red-50 dark:bg-red-900/30 text-red-400 dark:text-red-400"
                                                         : "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-muted-foreground",
-                                                isToday && !isCompleted && "ring-2 ring-[#111] dark:ring-white ring-offset-2 ring-offset-background"
+                                                isToday && !isCompleted && "ring-2 ring-primary dark:ring-primary-foreground ring-offset-2 ring-offset-background"
                                             )}
                                             aria-label={`Toggle habit ${habit.title} for ${dateStr}, currently ${isCompleted ? 'Completed' : 'Not Completed'}`}
                                         >

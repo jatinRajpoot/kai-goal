@@ -30,8 +30,6 @@
   /* Card surfaces - Pure white for lift effect */
   --card: #ffffff;
   --card-foreground: #1A1A1A;
-  /* Tertiary/Labels color */
-  --tertiary: #9CA3AF;
 }
 
 .dark {
@@ -52,7 +50,6 @@
   --ring: rgba(255,255,255,0.1);
   --card: #18181b;
   --card-foreground: #fafafa;
-  --tertiary: #71717a;
 }
 
 * {

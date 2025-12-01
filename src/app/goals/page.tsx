@@ -443,7 +443,7 @@ export default function GoalsPage() {
                                                     <div key={phase.$id} className="rounded-2xl bg-white dark:bg-card p-4 shadow-sm">
                                                         <div className="flex items-center justify-between mb-3">
                                                             <div className="flex items-center gap-2">
-                                                                <span className="flex items-center justify-center h-6 w-6 rounded-lg bg-[#111] dark:bg-white text-white dark:text-gray-900 text-xs font-bold">
+                                                                <span className="flex items-center justify-center h-6 w-6 rounded-lg bg-primary dark:bg-primary-foreground text-primary-foreground dark:text-primary text-xs font-bold">
                                                                     {index + 1}
                                                                 </span>
                                                                 <h5 className="font-medium text-foreground">{phase.title}</h5>
@@ -505,7 +505,7 @@ export default function GoalsPage() {
                                                                             className={cn(
                                                                                 "mr-3 h-5 w-5 rounded-lg flex items-center justify-center cursor-pointer transition-all",
                                                                                 task.isCompleted
-                                                                                    ? 'bg-[#111] dark:bg-white text-white dark:text-gray-900'
+                                                                                    ? 'bg-primary dark:bg-primary-foreground text-primary-foreground dark:text-primary'
                                                                                     : 'border-2 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                                                                             )}
                                                                         >
@@ -589,7 +589,7 @@ export default function GoalsPage() {
                                                         className={cn(
                                                             "mr-3 h-5 w-5 rounded-lg flex items-center justify-center cursor-pointer transition-all",
                                                             task.isCompleted
-                                                                ? 'bg-[#111] dark:bg-white text-white dark:text-gray-900'
+                                                                ? 'bg-primary dark:bg-primary-foreground text-primary-foreground dark:text-primary'
                                                                 : 'border-2 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                                                         )}
                                                     >

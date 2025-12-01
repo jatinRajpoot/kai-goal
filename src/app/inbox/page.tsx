@@ -198,11 +198,11 @@ export default function InboxPage() {
                                     className={cn(
                                         "flex h-5 w-5 items-center justify-center rounded-lg border-2 cursor-pointer transition-all",
                                         convertToTask
-                                            ? "bg-[#111] border-[#111] dark:bg-white dark:border-white"
+                                            ? "bg-primary border-primary dark:bg-primary-foreground dark:border-primary-foreground"
                                             : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
                                     )}
                                 >
-                                    {convertToTask && <Check className="h-3 w-3 text-white dark:text-gray-900" />}
+                                    {convertToTask && <Check className="h-3 w-3 text-primary-foreground dark:text-primary" />}
                                 </label>
                             </div>
                             <label htmlFor="convertToTask" className="text-sm font-medium text-muted-foreground cursor-pointer">
