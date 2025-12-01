@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateApiKey, databases, DATABASE_ID } from '@/lib/server/appwrite';
-import { ID } from 'node-appwrite';
+import { ID, Permission, Role } from 'node-appwrite';
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ phaseId: string }> }) {
     const apiKey = req.headers.get('X-API-Key');
@@ -42,7 +42,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pha
                 phaseId,
                 isCompleted: false,
                 userId
-            }
+            },
+            [
+                Permission.read(Role.user(userId)),
+                Permission.update(Role.user(userId)),
+                Permission.delete(Role.user(userId)),
+            ]
         );
 
         return NextResponse.json(doc, { status: 201 });
