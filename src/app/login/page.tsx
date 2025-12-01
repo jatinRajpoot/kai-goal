@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { ID, OAuthProvider } from 'appwrite';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/components/ui/Toast';
 import { motion } from 'framer-motion';
 
 export default function LoginPage() {
@@ -19,10 +20,53 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const { refreshUser } = useAuth();
+    const { success, error: showError } = useToast();
+
+    // Simple validation
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email) {
+            return 'Email is required';
+        }
+        if (!emailRegex.test(email)) {
+            return 'Please enter a valid email address';
+        }
+        return '';
+    };
+
+    const validatePassword = (password: string) => {
+        if (!password) {
+            return 'Password is required';
+        }
+        if (password.length < 8) {
+            return 'Password must be at least 8 characters';
+        }
+        return '';
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+
+        // Validate inputs
+        const emailErr = validateEmail(email);
+        const passwordErr = validatePassword(password);
+        
+        setEmailError(emailErr);
+        setPasswordError(passwordErr);
+
+        if (emailErr || passwordErr) {
+            return;
+        }
+
+        if (isSignUp && !name.trim()) {
+            showError('Please enter your name');
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -35,13 +79,18 @@ export default function LoginPage() {
             if (isSignUp) {
                 await account.create(ID.unique(), email, password, name);
                 await account.createEmailPasswordSession(email, password);
+                success('Account created successfully! Welcome to Kai! 🎉');
             } else {
                 await account.createEmailPasswordSession(email, password);
+                success('Welcome back! 👋');
             }
             await refreshUser();
             router.push('/');
-        } catch (err: any) {
-            setError(err.message || 'Failed to authenticate. Please try again.');
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to authenticate. Please try again.';
+            setError(errorMessage);
+            // Note: We use inline error display for auth errors instead of toast
+            // as it's more visible and persistent in this context
         } finally {
             setLoading(false);
         }
@@ -54,8 +103,9 @@ export default function LoginPage() {
                 `${window.location.origin}/`,
                 `${window.location.origin}/login`
             );
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to authenticate with Google';
+            setError(errorMessage);
         }
     };
 
@@ -103,7 +153,11 @@ export default function LoginPage() {
                                 type="email"
                                 placeholder="name@example.com"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    if (emailError) setEmailError('');
+                                }}
+                                error={emailError}
                                 required
                             />
                         </div>
@@ -113,7 +167,11 @@ export default function LoginPage() {
                                 type="password"
                                 placeholder="••••••••"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    if (passwordError) setPasswordError('');
+                                }}
+                                error={passwordError}
                                 required
                             />
                         </div>
@@ -128,8 +186,8 @@ export default function LoginPage() {
                             </motion.div>
                         )}
 
-                        <Button type="submit" className="w-full" disabled={loading}>
-                            {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
+                        <Button type="submit" className="w-full" disabled={loading} loading={loading}>
+                            {isSignUp ? 'Sign Up' : 'Sign In'}
                         </Button>
                     </form>
 
@@ -164,8 +222,13 @@ export default function LoginPage() {
                             {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
                         </span>
                         <button
-                            onClick={() => setIsSignUp(!isSignUp)}
-                            className="font-medium text-primary hover:underline cursor-pointer"
+                            onClick={() => {
+                                setIsSignUp(!isSignUp);
+                                setError('');
+                                setEmailError('');
+                                setPasswordError('');
+                            }}
+                            className="font-medium text-primary hover:underline cursor-pointer min-h-[44px] px-1"
                         >
                             {isSignUp ? 'Sign In' : 'Sign Up'}
                         </button>

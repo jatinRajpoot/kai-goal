@@ -13,6 +13,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ ta
     }
 
     const { taskId } = await params;
+    const db = databases();
+    const dbId = DATABASE_ID();
 
     try {
         const body = await req.json();
@@ -22,14 +24,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ ta
             return NextResponse.json({ error: 'isCompleted is required' }, { status: 400 });
         }
 
-        const task = await databases.getDocument(DATABASE_ID, 'tasks', taskId);
+        const task = await db.getDocument(dbId, 'tasks', taskId);
 
         if (task.userId !== userId) {
              return NextResponse.json({ error: 'Task not found or access denied' }, { status: 404 });
         }
 
-        const doc = await databases.updateDocument(
-            DATABASE_ID,
+        const doc = await db.updateDocument(
+            dbId,
             'tasks',
             taskId,
             {

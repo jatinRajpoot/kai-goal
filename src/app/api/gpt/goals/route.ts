@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateApiKey, databases, DATABASE_ID } from '@/lib/server/appwrite';
-import { ID } from 'node-appwrite';
+import { ID, Permission, Role } from 'node-appwrite';
 
 export async function POST(req: NextRequest) {
     const apiKey = req.headers.get('X-API-Key');
@@ -13,6 +13,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Invalid API Key' }, { status: 401 });
     }
 
+    const db = databases();
+    const dbId = DATABASE_ID();
+
     try {
         const body = await req.json();
         const { title, description, deadline } = body;
@@ -21,8 +24,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Title is required' }, { status: 400 });
         }
 
-        const doc = await databases.createDocument(
-            DATABASE_ID,
+        const doc = await db.createDocument(
+            dbId,
             'goals',
             ID.unique(),
             {
@@ -30,7 +33,12 @@ export async function POST(req: NextRequest) {
                 description,
                 deadline,
                 userId,
-            }
+            },
+            [
+                Permission.read(Role.user(userId)),
+                Permission.update(Role.user(userId)),
+                Permission.delete(Role.user(userId)),
+            ]
         );
 
         return NextResponse.json(doc, { status: 201 });

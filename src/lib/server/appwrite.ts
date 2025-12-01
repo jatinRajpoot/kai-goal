@@ -1,28 +1,56 @@
 import { Client, Databases, Query } from 'node-appwrite';
 
-const client = new Client();
+let client: Client | null = null;
+let databases: Databases | null = null;
+let DATABASE_ID: string | null = null;
 
-const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT;
-const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
-const apiKey = process.env.APPWRITE_API;
-const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-
-if (!endpoint || !projectId || !apiKey || !databaseId) {
-    throw new Error('Missing Appwrite configuration');
+// Lazily initialize the client to avoid build-time errors when env vars are not set
+function getClient(): Client {
+    if (!client) {
+        const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT;
+        const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
+        const apiKey = process.env.APPWRITE_API;
+        
+        if (!endpoint || !projectId || !apiKey) {
+            throw new Error('Missing Appwrite configuration');
+        }
+        
+        client = new Client();
+        client
+            .setEndpoint(endpoint)
+            .setProject(projectId)
+            .setKey(apiKey);
+    }
+    return client;
 }
 
-client
-    .setEndpoint(endpoint)
-    .setProject(projectId)
-    .setKey(apiKey);
+function getDatabases(): Databases {
+    if (!databases) {
+        databases = new Databases(getClient());
+    }
+    return databases;
+}
 
-export const databases = new Databases(client);
-export const DATABASE_ID = databaseId;
+function getDatabaseId(): string {
+    if (!DATABASE_ID) {
+        const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
+        if (!databaseId) {
+            throw new Error('Missing database ID configuration');
+        }
+        DATABASE_ID = databaseId;
+    }
+    return DATABASE_ID;
+}
+
+export { getDatabases as databases, getDatabaseId as DATABASE_ID };
 
 export async function validateApiKey(key: string): Promise<string | null> {
     try {
-        const response = await databases.listDocuments(
-            DATABASE_ID,
+        const db = getDatabases();
+        const dbId = getDatabaseId();
+        
+        const response = await db.listDocuments(
+            dbId,
             'api_keys',
             [Query.equal('key', key)]
         );

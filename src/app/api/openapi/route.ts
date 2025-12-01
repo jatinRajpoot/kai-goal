@@ -179,6 +179,7 @@ const openApiSpec = {
     },
   },
   components: {
+    schemas: {},
     securitySchemes: {
       ApiKeyAuth: {
         type: 'apiKey',
