@@ -209,11 +209,11 @@ export default function HabitsPage() {
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                             <h3 className="font-semibold text-lg text-foreground">{habit.title}</h3>
                             <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
-                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500/10 rounded-full text-orange-600 dark:text-orange-400 text-sm">
+                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 rounded-full text-orange-600 text-sm">
                                     <Flame className="h-4 w-4 fill-current" />
                                     <span className="font-bold">{habit.streak} day{habit.streak !== 1 ? 's' : ''}</span>
                                 </div>
-                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-500/10 rounded-full text-yellow-600 dark:text-yellow-400 text-sm">
+                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-50 rounded-full text-yellow-600 text-sm">
                                     <Trophy className="h-4 w-4 fill-current" />
                                     <span className="font-bold">Best: {habit.longestStreak || 0}</span>
                                 </div>

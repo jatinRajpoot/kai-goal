@@ -1,23 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
+  --background: #F7F8FA;
+  --foreground: #111111;
   --muted: #f4f4f5;
   --muted-foreground: #737373;
-  --primary: #171717;
+  --primary: #111111;
   --primary-foreground: #ffffff;
   --secondary: #f4f4f5;
-  --secondary-foreground: #171717;
+  --secondary-foreground: #111111;
   --accent: #f4f4f5;
-  --accent-foreground: #171717;
+  --accent-foreground: #111111;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #e5e5e5;
+  --border: rgba(0,0,0,0.05);
   --input: #e5e5e5;
   --ring: #0a0a0a;
   --card: #ffffff;
-  --card-foreground: #0a0a0a;
+  --card-foreground: #111111;
 }
 
 .dark {
@@ -112,20 +112,6 @@ summary::-webkit-details-marker {
   display: none;
 }
 
-.checker-background::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background-image: linear-gradient(#e6e6e690 1px, transparent 1px),
-    linear-gradient(90deg, #e6e6e690 1px, transparent 1px);
-  background-size: 3.7em 3.7em;
-  mask-image: radial-gradient(ellipse at 50% 40%, black 0%, transparent 55%);
-  z-index: -1;
-  background-position-x: center;
-}
 
 /* Animation utilities */
 @keyframes fadeIn {

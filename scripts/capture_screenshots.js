@@ -71,7 +71,7 @@ const path = require('path');
     // A simple waitForNavigation might be flaky if the app is SPA and uses client-side routing,
     // but since we are submitting a form (even if handled by JS), there should be some transition.
     // The login code uses router.push('/').
-    await page.waitForFunction(() => window.location.pathname === '/');
+    await page.waitForFunction(() => window.location.pathname === '/', { timeout: 60000 });
     console.log('Logged in successfully.');
 
     // Give it a moment to load initial dashboard data
