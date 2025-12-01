@@ -9,9 +9,11 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { Task, Habit } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/Toast';
-import { CheckCircle2, Circle, Flame, RefreshCw } from 'lucide-react';
+import { CheckCircle2, Circle, Flame, RefreshCw, Calendar, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export default function Dashboard() {
     const { user } = useAuth();
@@ -61,7 +63,7 @@ export default function Dashboard() {
                 'habits',
                 [
                     Query.equal('userId', user.$id),
-                    Query.limit(20)
+                    Query.limit(6)
                 ]
             );
 
@@ -111,21 +113,21 @@ export default function Dashboard() {
 
     if (loading) {
         return (
-            <div className="space-y-8 max-w-5xl mx-auto w-full">
+            <div className="space-y-12 w-full">
                 <section>
                     <Skeleton className="h-8 w-48 mb-6" />
-                    <div className="space-y-4">
-                        <Skeleton className="h-20 w-full rounded-xl" />
-                        <Skeleton className="h-20 w-full rounded-xl" />
-                        <Skeleton className="h-20 w-full rounded-xl" />
+                    <div className="space-y-3">
+                        <Skeleton className="h-16 w-full rounded-2xl" />
+                        <Skeleton className="h-16 w-full rounded-2xl" />
+                        <Skeleton className="h-16 w-full rounded-2xl" />
                     </div>
                 </section>
                 <section>
                     <Skeleton className="h-8 w-48 mb-6" />
                     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                        <Skeleton className="h-24 w-full rounded-xl" />
-                        <Skeleton className="h-24 w-full rounded-xl" />
-                        <Skeleton className="h-24 w-full rounded-xl" />
+                        <Skeleton className="h-32 w-full rounded-2xl" />
+                        <Skeleton className="h-32 w-full rounded-2xl" />
+                        <Skeleton className="h-32 w-full rounded-2xl" />
                     </div>
                 </section>
             </div>
@@ -134,14 +136,13 @@ export default function Dashboard() {
 
     if (hasError) {
         return (
-            <div className="max-w-5xl mx-auto w-full">
+            <div className="w-full py-12">
                 <EmptyState
                     icon={RefreshCw}
                     title="Failed to load dashboard"
                     description="We couldn't load your data. Please check your connection and try again."
                     action={
                         <Button onClick={handleRetry} loading={retrying}>
-                            <RefreshCw className={`mr-2 h-4 w-4 ${retrying ? 'animate-spin' : ''}`} />
                             Try Again
                         </Button>
                     }
@@ -150,14 +151,24 @@ export default function Dashboard() {
         );
     }
 
+    // Dummy sparkline component for visual flair
+    const Sparkline = () => (
+        <div className="flex items-end gap-[2px] h-8 opacity-20 group-hover:opacity-40 transition-opacity">
+            {[40, 60, 45, 70, 50, 80, 65, 90, 75, 100].map((h, i) => (
+                <div key={i} className="w-1 bg-primary rounded-full" style={{ height: `${h}%` }} />
+            ))}
+        </div>
+    );
+
     return (
-        <div className="space-y-10 max-w-5xl mx-auto w-full">
+        <div className="space-y-12 w-full">
+            {/* Tasks Section */}
             <section>
-                <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
-                    <h2 className="text-xl font-semibold tracking-tight text-foreground">Today&apos;s Plan</h2>
-                    <span className="text-sm text-muted-foreground bg-secondary px-2.5 py-0.5 rounded-full font-medium">
-                        {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
-                    </span>
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-lg font-semibold tracking-tight text-foreground flex items-center gap-2">
+                        <Calendar className="w-5 h-5 text-muted-foreground" />
+                        Today&apos;s Plan
+                    </h2>
                 </div>
 
                 {tasks.length === 0 ? (
@@ -165,7 +176,7 @@ export default function Dashboard() {
                         icon={CheckCircle2}
                         title="All caught up!"
                         description="No tasks due today. Enjoy your free time."
-                        className="bg-green-50/50 dark:bg-green-900/10 border-green-200 dark:border-green-800"
+                        className="bg-secondary/5"
                     />
                 ) : (
                     <div className="grid gap-3">
@@ -178,21 +189,21 @@ export default function Dashboard() {
                                     exit={{ opacity: 0, x: -10 }}
                                     layout
                                 >
-                                    <Card className="flex items-center p-4 transition-all hover:bg-secondary/40 hover:shadow-md group border-border/60">
+                                    <div className="group flex items-center bg-white rounded-2xl border border-border/50 p-4 shadow-sm hover:shadow-md transition-all duration-200">
                                         <button
                                             onClick={() => toggleTask(task.$id, task.isCompleted)}
                                             className="mr-4 text-muted-foreground hover:text-primary transition-colors cursor-pointer p-1 min-h-[44px] min-w-[44px] flex items-center justify-center -m-1"
                                             aria-label={`Mark "${task.title}" as complete`}
                                         >
-                                            <Circle className="h-5 w-5" />
+                                            <Circle className="h-6 w-6 stroke-[1.5]" />
                                         </button>
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="font-medium text-foreground truncate">{task.title}</h3>
-                                            <p className="text-xs text-muted-foreground mt-0.5">
+                                            <h3 className="font-medium text-foreground truncate text-base">{task.title}</h3>
+                                            <p className="text-xs text-muted-foreground mt-0.5 font-medium">
                                                 {new Date(task.dueDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                                             </p>
                                         </div>
-                                    </Card>
+                                    </div>
                                 </motion.div>
                             ))}
                         </AnimatePresence>
@@ -200,8 +211,14 @@ export default function Dashboard() {
                 )}
             </section>
 
+            {/* Habits Section */}
             <section>
-                <h2 className="mb-6 text-xl font-semibold tracking-tight text-foreground">Habit Streaks</h2>
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-lg font-semibold tracking-tight text-foreground flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-muted-foreground" />
+                        Habit Streaks
+                    </h2>
+                </div>
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                     {habits.map((habit, index) => (
                         <motion.div
@@ -210,11 +227,25 @@ export default function Dashboard() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
                         >
-                            <Card className="flex items-center justify-between p-5 hover:border-primary/20 hover:shadow-md transition-all">
-                                <span className="font-medium text-foreground truncate mr-2">{habit.title}</span>
-                                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-orange-500/10 rounded-full text-orange-600 dark:text-orange-400 flex-shrink-0">
-                                    <Flame className="h-3.5 w-3.5 fill-current" />
-                                    <span className="font-bold text-xs">{habit.streak}</span>
+                            <Card className="relative overflow-hidden p-6 h-full min-h-[140px] flex flex-col justify-between group hover:border-border transition-colors">
+                                <div className="flex justify-between items-start mb-4">
+                                    <h3 className="font-medium text-foreground truncate text-lg">{habit.title}</h3>
+                                    <div className={cn(
+                                        "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold",
+                                        habit.streak > 0
+                                            ? "bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400"
+                                            : "bg-secondary text-muted-foreground"
+                                    )}>
+                                        <Flame className={cn("h-3.5 w-3.5", habit.streak > 0 && "fill-current")} />
+                                        <span>{habit.streak}</span>
+                                    </div>
+                                </div>
+
+                                <div className="mt-auto flex items-end justify-between">
+                                    <div className="text-xs text-muted-foreground font-medium">
+                                        Current Streak
+                                    </div>
+                                    <Sparkline />
                                 </div>
                             </Card>
                         </motion.div>
@@ -225,6 +256,11 @@ export default function Dashboard() {
                                 icon={Flame}
                                 title="No habits tracked yet"
                                 description="Start building healthy habits to see your streaks here."
+                                action={
+                                    <Link href="/habits">
+                                        <Button>Create Habit</Button>
+                                    </Link>
+                                }
                             />
                         </div>
                     )}

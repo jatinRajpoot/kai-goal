@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 interface AuthContextType {
     user: Models.User<Models.Preferences> | null;
     loading: boolean;
-    login: () => void; // We'll redirect to login page or handle login here
+    login: () => void;
     logout: () => Promise<void>;
     refreshUser: () => Promise<void>;
 }
