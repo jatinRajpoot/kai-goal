@@ -159,15 +159,17 @@ export default function SettingsPage() {
             </div>
 
             {/* Profile Section */}
-            <Card className="p-4 sm:p-6">
-                <div className="flex items-center gap-2 mb-4">
-                    <User className="h-5 w-5 text-primary" />
+            <Card className="p-5 sm:p-6">
+                <div className="flex items-center gap-2 mb-5">
+                    <div className="p-2 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl">
+                        <User className="h-5 w-5 text-foreground" />
+                    </div>
                     <h3 className="font-semibold text-lg">Profile</h3>
                 </div>
 
                 <form onSubmit={updateProfile} className="space-y-4 max-w-md">
                     <div>
-                        <label className="block text-sm font-medium mb-1">Display Name</label>
+                        <label className="block text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">Display Name</label>
                         <Input
                             value={name}
                             onChange={(e) => setName(e.target.value)}
@@ -175,13 +177,13 @@ export default function SettingsPage() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-1">Email</label>
+                        <label className="block text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">Email</label>
                         <Input
                             value={user?.email || ''}
                             disabled
-                            className="bg-muted text-muted-foreground"
+                            className="bg-gray-100 dark:bg-gray-800 text-muted-foreground cursor-not-allowed"
                         />
-                        <p className="text-xs text-muted-foreground mt-1">Email cannot be changed.</p>
+                        <p className="text-xs text-muted-foreground mt-1.5">Email cannot be changed.</p>
                     </div>
                     <Button type="submit" disabled={isUpdatingProfile || name === user?.name} loading={isUpdatingProfile}>
                         Update Profile
@@ -190,10 +192,12 @@ export default function SettingsPage() {
             </Card>
 
             {/* API Keys Section */}
-            <Card className="p-4 sm:p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <Card className="p-5 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
                     <div className="flex items-center gap-2">
-                        <Key className="h-5 w-5 text-primary" />
+                        <div className="p-2 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl">
+                            <Key className="h-5 w-5 text-foreground" />
+                        </div>
                         <div>
                             <h3 className="font-semibold text-lg">API Keys</h3>
                             <p className="text-sm text-muted-foreground">Manage keys for accessing your data via the Custom GPT API.</p>
@@ -205,20 +209,22 @@ export default function SettingsPage() {
                 </div>
 
                 {newlyGeneratedKey && (
-                    <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 mb-6">
+                    <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl p-5 mb-6">
                         <div className="flex items-start gap-3">
-                            <Check className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                            <div className="p-1.5 bg-green-100 dark:bg-green-800/50 rounded-full">
+                                <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                            </div>
                             <div className="flex-1 min-w-0">
                                 <h4 className="font-medium text-green-900 dark:text-green-100">API Key Generated</h4>
-                                <p className="text-sm text-green-700 dark:text-green-300 mt-1 mb-2">
+                                <p className="text-sm text-green-700 dark:text-green-300 mt-1 mb-3">
                                     Copy this key now. It will be hidden after refresh.
                                 </p>
                                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                                    <code className="bg-background/50 px-2 py-1 rounded text-sm font-mono break-all border border-border flex-1">
+                                    <code className="bg-white/60 dark:bg-gray-800/60 px-3 py-2 rounded-xl text-sm font-mono break-all flex-1">
                                         {newlyGeneratedKey}
                                     </code>
                                     <Button
-                                        variant="ghost"
+                                        variant="outline"
                                         size="sm"
                                         onClick={() => copyToClipboard(newlyGeneratedKey, 'new')}
                                         className="min-h-[44px] min-w-[44px] flex-shrink-0"
@@ -244,12 +250,12 @@ export default function SettingsPage() {
                         />
                     ) : (
                         apiKeys.map((apiKey) => (
-                            <div key={apiKey.$id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-lg border border-border bg-card/50">
+                            <div key={apiKey.$id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50">
                                 <div className="space-y-1 min-w-0">
-                                    <div className="font-mono text-sm text-muted-foreground truncate">
+                                    <div className="font-mono text-sm text-foreground truncate">
                                         {apiKey.key.substring(0, 6)}...{apiKey.key.substring(apiKey.key.length - 4)}
                                     </div>
-                                    <div className="text-xs text-muted-foreground/70">
+                                    <div className="text-xs text-muted-foreground">
                                         Created: {new Date(apiKey.createdAt).toLocaleDateString()}
                                     </div>
                                 </div>
@@ -257,7 +263,7 @@ export default function SettingsPage() {
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleDeleteClick(apiKey.$id)}
-                                    className="text-destructive hover:text-destructive hover:bg-destructive/10 min-h-[44px] min-w-[44px] self-end sm:self-auto"
+                                    className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 min-h-[44px] min-w-[44px] self-end sm:self-auto"
                                     aria-label="Delete API key"
                                 >
                                     <Trash2 className="h-4 w-4" />

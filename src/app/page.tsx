@@ -154,7 +154,7 @@ export default function Dashboard() {
             <section className="md:col-span-8">
                 <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
                     <h2 className="text-2xl font-bold tracking-tight text-foreground">Today&apos;s Plan</h2>
-                    <span className="text-sm text-foreground/60 bg-white px-3 py-1 rounded-full font-medium shadow-sm border border-gray-100">
+                    <span className="text-xs text-muted-foreground bg-white dark:bg-card px-3 py-1.5 rounded-full font-medium shadow-sm border border-gray-100 dark:border-gray-800 uppercase tracking-wider">
                         {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
                     </span>
                 </div>
@@ -176,16 +176,16 @@ export default function Dashboard() {
                                     exit={{ opacity: 0, x: -10 }}
                                     layout
                                 >
-                                    <Card className="flex items-center p-6 transition-all hover:translate-y-[-2px] hover:shadow-lg group bg-white">
+                                    <Card className="flex items-center p-6 transition-all hover:translate-y-[-2px] hover:shadow-md group">
                                         <button
                                             onClick={() => toggleTask(task.$id, task.isCompleted)}
-                                            className="mr-5 text-muted-foreground hover:text-primary transition-colors cursor-pointer p-1 min-h-[44px] min-w-[44px] flex items-center justify-center -m-1"
+                                            className="mr-5 text-muted-foreground hover:text-green-500 transition-colors cursor-pointer p-1 min-h-[44px] min-w-[44px] flex items-center justify-center -m-1"
                                             aria-label={`Mark "${task.title}" as complete`}
                                         >
                                             <Circle className="h-6 w-6 stroke-[1.5]" />
                                         </button>
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="text-lg font-medium text-foreground truncate">{task.title}</h3>
+                                            <h3 className="text-lg font-medium text-foreground truncate group-hover:text-foreground">{task.title}</h3>
                                             <p className="text-sm text-muted-foreground mt-1">
                                                 {new Date(task.dueDate).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
                                             </p>
@@ -208,9 +208,9 @@ export default function Dashboard() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
                         >
-                            <Card className="flex items-center justify-between p-5 hover:translate-y-[-2px] hover:shadow-lg transition-all bg-white">
+                            <Card className="flex items-center justify-between p-5 hover:translate-y-[-2px] hover:shadow-md transition-all">
                                 <span className="font-medium text-foreground truncate mr-2">{habit.title}</span>
-                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 rounded-full text-orange-600 flex-shrink-0">
+                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/30 dark:to-amber-900/30 rounded-full text-orange-600 dark:text-orange-400 flex-shrink-0 shadow-sm">
                                     <Flame className="h-4 w-4 fill-orange-500 text-orange-500" />
                                     <span className="font-bold text-sm">{habit.streak}</span>
                                 </div>

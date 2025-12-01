@@ -175,7 +175,7 @@ export default function InboxPage() {
         <div className="max-w-2xl mx-auto w-full space-y-8">
             <section>
                 <h2 className="text-2xl font-bold mb-4 text-foreground">Quick Capture</h2>
-                <Card className="p-4 sm:p-6">
+                <Card className="p-5 sm:p-6">
                     <form onSubmit={handleCapture} className="space-y-4">
                         <Input
                             value={newItem}
@@ -184,14 +184,27 @@ export default function InboxPage() {
                             className="text-lg"
                         />
 
-                        <div className="flex items-center space-x-2">
-                            <input
-                                type="checkbox"
-                                id="convertToTask"
-                                checked={convertToTask}
-                                onChange={(e) => setConvertToTask(e.target.checked)}
-                                className="rounded border-border text-primary focus:ring-primary cursor-pointer h-5 w-5"
-                            />
+                        <div className="flex items-center space-x-3">
+                            <div className="relative">
+                                <input
+                                    type="checkbox"
+                                    id="convertToTask"
+                                    checked={convertToTask}
+                                    onChange={(e) => setConvertToTask(e.target.checked)}
+                                    className="peer sr-only"
+                                />
+                                <label
+                                    htmlFor="convertToTask"
+                                    className={cn(
+                                        "flex h-5 w-5 items-center justify-center rounded-lg border-2 cursor-pointer transition-all",
+                                        convertToTask
+                                            ? "bg-primary border-primary dark:bg-primary-foreground dark:border-primary-foreground"
+                                            : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                                    )}
+                                >
+                                    {convertToTask && <Check className="h-3 w-3 text-primary-foreground dark:text-primary" />}
+                                </label>
+                            </div>
                             <label htmlFor="convertToTask" className="text-sm font-medium text-muted-foreground cursor-pointer">
                                 Convert to Task immediately
                             </label>
@@ -202,7 +215,7 @@ export default function InboxPage() {
                                 <select
                                     value={selectedGoal}
                                     onChange={(e) => setSelectedGoal(e.target.value)}
-                                    className="w-full rounded-xl border border-input bg-background text-foreground p-3 text-sm cursor-pointer focus:ring-2 focus:ring-ring focus:border-input transition-all min-h-[44px]"
+                                    className="w-full rounded-xl border-none bg-input text-foreground p-3.5 text-sm cursor-pointer focus:ring-2 focus:ring-ring focus:bg-white dark:focus:bg-card transition-all min-h-[44px]"
                                 >
                                     <option value="">Select Goal (Optional)</option>
                                     {goals.map(g => (
@@ -214,7 +227,7 @@ export default function InboxPage() {
                                     value={selectedPhase}
                                     onChange={(e) => setSelectedPhase(e.target.value)}
                                     disabled={!selectedGoal}
-                                    className="w-full rounded-xl border border-input bg-background text-foreground p-3 text-sm cursor-pointer focus:ring-2 focus:ring-ring focus:border-input transition-all disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+                                    className="w-full rounded-xl border-none bg-input text-foreground p-3.5 text-sm cursor-pointer focus:ring-2 focus:ring-ring focus:bg-white dark:focus:bg-card transition-all disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
                                 >
                                     <option value="">Select Phase (Optional)</option>
                                     {phases.map(p => (
@@ -240,14 +253,14 @@ export default function InboxPage() {
                 </h3>
                 <div className="space-y-3">
                     {items.map(item => (
-                        <Card key={item.$id} className="p-4 flex items-center justify-between group hover:shadow-md transition-all">
+                        <Card key={item.$id} className="p-5 flex items-center justify-between group hover:shadow-md hover:translate-y-[-1px] transition-all">
                             <span className="text-foreground flex-1 mr-4">{item.content}</span>
                             <div className="flex space-x-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                 <Button 
                                     size="sm" 
                                     variant="ghost" 
                                     onClick={() => markProcessed(item.$id)}
-                                    className="min-h-[44px] min-w-[44px]"
+                                    className="min-h-[44px] min-w-[44px] hover:bg-green-50 dark:hover:bg-green-900/30"
                                     aria-label="Mark as processed"
                                 >
                                     <Check className="h-4 w-4 text-green-500" />
@@ -256,10 +269,10 @@ export default function InboxPage() {
                                     size="sm" 
                                     variant="ghost" 
                                     onClick={() => markProcessed(item.$id)}
-                                    className="min-h-[44px] min-w-[44px]"
+                                    className="min-h-[44px] min-w-[44px] hover:bg-red-50 dark:hover:bg-red-900/30"
                                     aria-label="Delete item"
                                 >
-                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                    <Trash2 className="h-4 w-4 text-red-500" />
                                 </Button>
                             </div>
                         </Card>
@@ -269,7 +282,6 @@ export default function InboxPage() {
                             icon={Inbox}
                             title="Inbox is empty"
                             description="All caught up! Capture new thoughts above. ✨"
-                            className="bg-green-50/50 dark:bg-green-900/10 border-green-200 dark:border-green-800"
                         />
                     )}
                 </div>

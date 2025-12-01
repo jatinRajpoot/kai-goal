@@ -24,10 +24,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                     id={inputId}
                     ref={ref}
                     className={cn(
-                        'flex min-h-[44px] w-full rounded-lg border bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200',
-                        error 
-                            ? 'border-destructive focus-visible:ring-destructive text-destructive' 
-                            : 'border-input',
+                        'flex min-h-[44px] w-full rounded-xl border-none bg-input px-4 py-3 text-sm text-foreground ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:bg-white dark:focus-visible:bg-card disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200',
+                        error && 'ring-2 ring-destructive/30 text-destructive',
                         className
                     )}
                     aria-invalid={error ? 'true' : 'false'}

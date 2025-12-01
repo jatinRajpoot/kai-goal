@@ -23,22 +23,22 @@ export function EmptyState({
     return (
         <Card
             className={cn(
-                'flex flex-col items-center justify-center py-12 px-6',
+                'flex flex-col items-center justify-center py-16 px-8 bg-white dark:bg-card',
                 className
             )}
         >
             {Icon && (
-                <div className="h-16 w-16 rounded-full bg-secondary flex items-center justify-center mb-4">
-                    <Icon className="h-8 w-8 text-muted-foreground" />
+                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center mb-5 shadow-inner">
+                    <Icon className="h-8 w-8 text-muted-foreground/70" strokeWidth={1.5} />
                 </div>
             )}
-            <h3 className="text-lg font-medium text-foreground mb-1">{title}</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
             {description && (
-                <p className="text-sm text-muted-foreground text-center max-w-sm mb-4">
+                <p className="text-sm text-muted-foreground text-center max-w-xs mb-6 leading-relaxed">
                     {description}
                 </p>
             )}
-            {action && <div className="mt-2">{action}</div>}
+            {action && <div className="mt-1">{action}</div>}
         </Card>
     );
 }

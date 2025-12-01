@@ -12,20 +12,20 @@ interface ButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ({ className, variant = 'primary', size = 'md', loading = false, children, disabled, ...props }, ref) => {
-        const baseStyles = 'inline-flex items-center justify-center rounded-full font-medium transition-all duration-200 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.98]';
+        const baseStyles = 'inline-flex items-center justify-center rounded-full font-medium transition-all duration-200 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
 
         const variants = {
-            primary: 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md',
-            secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-            outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground hover:border-accent-foreground/20',
+            primary: 'bg-[#111] text-white shadow-md hover:shadow-lg hover:bg-[#222] hover:scale-[1.02] active:scale-[0.98]',
+            secondary: 'bg-secondary text-secondary-foreground hover:bg-accent shadow-sm',
+            outline: 'border border-gray-200 bg-white hover:bg-gray-50 text-foreground shadow-sm',
             ghost: 'hover:bg-accent hover:text-accent-foreground',
-            danger: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+            danger: 'bg-destructive text-destructive-foreground shadow-md hover:shadow-lg hover:bg-destructive/90',
         };
 
         // Mobile-friendly touch targets (minimum 44px height)
         const sizes = {
             sm: 'min-h-[44px] h-auto px-3 py-2 text-xs md:min-h-[32px] md:h-8 md:py-0',
-            md: 'min-h-[44px] h-auto px-4 py-2 text-sm',
+            md: 'min-h-[44px] h-auto px-5 py-2.5 text-sm',
             lg: 'min-h-[48px] h-auto px-8 py-3 text-base',
         };
 
