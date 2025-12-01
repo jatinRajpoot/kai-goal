@@ -1,7 +1,6 @@
 'use client';
 
 import React, { ReactNode } from 'react';
-import { Card } from './Card';
 import { cn } from '@/lib/utils';
 import { LucideIcon } from 'lucide-react';
 
@@ -21,24 +20,24 @@ export function EmptyState({
     className,
 }: EmptyStateProps) {
     return (
-        <Card
+        <div
             className={cn(
-                'flex flex-col items-center justify-center py-12 px-6 border-dashed bg-secondary/20',
+                'flex flex-col items-center justify-center py-16 px-6 text-center',
                 className
             )}
         >
             {Icon && (
-                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-4">
-                    <Icon className="h-6 w-6 text-muted-foreground" />
+                <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-6">
+                    <Icon className="h-8 w-8 text-muted-foreground/60" />
                 </div>
             )}
-            <h3 className="text-lg font-medium text-foreground mb-1">{title}</h3>
+            <h3 className="text-xl font-medium text-foreground mb-2">{title}</h3>
             {description && (
-                <p className="text-sm text-muted-foreground text-center max-w-sm mb-4">
+                <p className="text-muted-foreground text-center max-w-sm mb-8 leading-relaxed">
                     {description}
                 </p>
             )}
             {action && <div className="mt-2">{action}</div>}
-        </Card>
+        </div>
     );
 }
